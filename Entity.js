@@ -18,14 +18,14 @@ var use = require('bayrell').use;
  *  limitations under the License.
  */
 if (typeof Runtime == 'undefined') Runtime = {};
-if (typeof Runtime.Annotations == 'undefined') Runtime.Annotations = {};
-Runtime.Annotations.Entity = function(ctx)
+if (typeof Runtime.Core == 'undefined') Runtime.Core = {};
+Runtime.Core.Entity = function(ctx)
 {
 	use("Runtime.CoreStruct").apply(this, arguments);
 };
-Runtime.Annotations.Entity.prototype = Object.create(use("Runtime.CoreStruct").prototype);
-Runtime.Annotations.Entity.prototype.constructor = Runtime.Annotations.Entity;
-Object.assign(Runtime.Annotations.Entity.prototype,
+Runtime.Core.Entity.prototype = Object.create(use("Runtime.CoreStruct").prototype);
+Runtime.Core.Entity.prototype.constructor = Runtime.Core.Entity;
+Object.assign(Runtime.Core.Entity.prototype,
 {
 	className: function(ctx)
 	{
@@ -45,7 +45,7 @@ Object.assign(Runtime.Annotations.Entity.prototype,
 	},
 	assignObject: function(ctx,o)
 	{
-		if (o instanceof use("Runtime.Annotations.Entity"))
+		if (o instanceof use("Runtime.Core.Entity"))
 		{
 			this.name = o.name;
 			this.value = o.value;
@@ -67,20 +67,20 @@ Object.assign(Runtime.Annotations.Entity.prototype,
 	},
 	getClassName: function(ctx)
 	{
-		return "Runtime.Annotations.Entity";
+		return "Runtime.Core.Entity";
 	},
 });
-Object.assign(Runtime.Annotations.Entity, use("Runtime.CoreStruct"));
-Object.assign(Runtime.Annotations.Entity,
+Object.assign(Runtime.Core.Entity, use("Runtime.CoreStruct"));
+Object.assign(Runtime.Core.Entity,
 {
 	/* ======================= Class Init Functions ======================= */
 	getCurrentNamespace: function()
 	{
-		return "Runtime.Annotations";
+		return "Runtime.Core";
 	},
 	getCurrentClassName: function()
 	{
-		return "Runtime.Annotations.Entity";
+		return "Runtime.Core.Entity";
 	},
 	getParentClassName: function()
 	{
@@ -93,8 +93,8 @@ Object.assign(Runtime.Annotations.Entity,
 		var IntrospectionInfo = use("Runtime.Annotations.IntrospectionInfo");
 		return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_CLASS,
-			"class_name": "Runtime.Annotations.Entity",
-			"name": "Runtime.Annotations.Entity",
+			"class_name": "Runtime.Core.Entity",
+			"name": "Runtime.Core.Entity",
 			"annotations": Collection.from([
 			]),
 		});
@@ -117,14 +117,14 @@ Object.assign(Runtime.Annotations.Entity,
 		var IntrospectionInfo = use("Runtime.Annotations.IntrospectionInfo");
 		if (field_name == "name") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.Annotations.Entity",
+			"class_name": "Runtime.Core.Entity",
 			"name": field_name,
 			"annotations": Collection.from([
 			]),
 		});
 		if (field_name == "value") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.Annotations.Entity",
+			"class_name": "Runtime.Core.Entity",
 			"name": field_name,
 			"annotations": Collection.from([
 			]),
@@ -141,12 +141,5 @@ Object.assign(Runtime.Annotations.Entity,
 	{
 		return null;
 	},
-	__implements__:
-	[
-		use("Runtime.Interfaces.EntityInterface"),
-	],
-});use.add(Runtime.Annotations.Entity);
-if (module.exports == undefined) module.exports = {};
-if (module.exports.Runtime == undefined) module.exports.Runtime = {};
-if (module.exports.Runtime.Annotations == undefined) module.exports.Runtime.Annotations = {};
-module.exports.Runtime.Annotations.Entity = Runtime.Annotations.Entity;
+});use.add(Runtime.Core.Entity);
+module.exports = Runtime.Core.Entity;

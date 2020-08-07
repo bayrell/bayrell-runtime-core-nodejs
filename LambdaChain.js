@@ -18,14 +18,14 @@ var use = require('bayrell').use;
  *  limitations under the License.
  */
 if (typeof Runtime == 'undefined') Runtime = {};
-if (typeof Runtime.Annotations == 'undefined') Runtime.Annotations = {};
-Runtime.Annotations.LambdaChain = function(ctx)
+if (typeof Runtime.Core == 'undefined') Runtime.Core = {};
+Runtime.Core.LambdaChain = function(ctx)
 {
 	use("Runtime.CoreStruct").apply(this, arguments);
 };
-Runtime.Annotations.LambdaChain.prototype = Object.create(use("Runtime.CoreStruct").prototype);
-Runtime.Annotations.LambdaChain.prototype.constructor = Runtime.Annotations.LambdaChain;
-Object.assign(Runtime.Annotations.LambdaChain.prototype,
+Runtime.Core.LambdaChain.prototype = Object.create(use("Runtime.CoreStruct").prototype);
+Runtime.Core.LambdaChain.prototype.constructor = Runtime.Core.LambdaChain;
+Object.assign(Runtime.Core.LambdaChain.prototype,
 {
 	logName: function(ctx)
 	{
@@ -44,7 +44,7 @@ Object.assign(Runtime.Annotations.LambdaChain.prototype,
 	},
 	assignObject: function(ctx,o)
 	{
-		if (o instanceof use("Runtime.Annotations.LambdaChain"))
+		if (o instanceof use("Runtime.Core.LambdaChain"))
 		{
 			this.name = o.name;
 			this.value = o.value;
@@ -75,20 +75,20 @@ Object.assign(Runtime.Annotations.LambdaChain.prototype,
 	},
 	getClassName: function(ctx)
 	{
-		return "Runtime.Annotations.LambdaChain";
+		return "Runtime.Core.LambdaChain";
 	},
 });
-Object.assign(Runtime.Annotations.LambdaChain, use("Runtime.CoreStruct"));
-Object.assign(Runtime.Annotations.LambdaChain,
+Object.assign(Runtime.Core.LambdaChain, use("Runtime.CoreStruct"));
+Object.assign(Runtime.Core.LambdaChain,
 {
 	/* ======================= Class Init Functions ======================= */
 	getCurrentNamespace: function()
 	{
-		return "Runtime.Annotations";
+		return "Runtime.Core";
 	},
 	getCurrentClassName: function()
 	{
-		return "Runtime.Annotations.LambdaChain";
+		return "Runtime.Core.LambdaChain";
 	},
 	getParentClassName: function()
 	{
@@ -101,8 +101,8 @@ Object.assign(Runtime.Annotations.LambdaChain,
 		var IntrospectionInfo = use("Runtime.Annotations.IntrospectionInfo");
 		return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_CLASS,
-			"class_name": "Runtime.Annotations.LambdaChain",
-			"name": "Runtime.Annotations.LambdaChain",
+			"class_name": "Runtime.Core.LambdaChain",
+			"name": "Runtime.Core.LambdaChain",
 			"annotations": Collection.from([
 			]),
 		});
@@ -128,35 +128,35 @@ Object.assign(Runtime.Annotations.LambdaChain,
 		var IntrospectionInfo = use("Runtime.Annotations.IntrospectionInfo");
 		if (field_name == "name") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.Annotations.LambdaChain",
+			"class_name": "Runtime.Core.LambdaChain",
 			"name": field_name,
 			"annotations": Collection.from([
 			]),
 		});
 		if (field_name == "value") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.Annotations.LambdaChain",
+			"class_name": "Runtime.Core.LambdaChain",
 			"name": field_name,
 			"annotations": Collection.from([
 			]),
 		});
 		if (field_name == "chain") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.Annotations.LambdaChain",
+			"class_name": "Runtime.Core.LambdaChain",
 			"name": field_name,
 			"annotations": Collection.from([
 			]),
 		});
 		if (field_name == "pos") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.Annotations.LambdaChain",
+			"class_name": "Runtime.Core.LambdaChain",
 			"name": field_name,
 			"annotations": Collection.from([
 			]),
 		});
 		if (field_name == "is_await") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.Annotations.LambdaChain",
+			"class_name": "Runtime.Core.LambdaChain",
 			"name": field_name,
 			"annotations": Collection.from([
 			]),
@@ -177,8 +177,5 @@ Object.assign(Runtime.Annotations.LambdaChain,
 	[
 		use("Runtime.Interfaces.EntityInterface"),
 	],
-});use.add(Runtime.Annotations.LambdaChain);
-if (module.exports == undefined) module.exports = {};
-if (module.exports.Runtime == undefined) module.exports.Runtime = {};
-if (module.exports.Runtime.Annotations == undefined) module.exports.Runtime.Annotations = {};
-module.exports.Runtime.Annotations.LambdaChain = Runtime.Annotations.LambdaChain;
+});use.add(Runtime.Core.LambdaChain);
+module.exports = Runtime.Core.LambdaChain;

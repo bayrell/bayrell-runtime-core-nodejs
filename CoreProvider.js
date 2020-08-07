@@ -18,17 +18,18 @@ var use = require('bayrell').use;
  *  limitations under the License.
  */
 if (typeof Runtime == 'undefined') Runtime = {};
-Runtime.CoreProvider = function(ctx)
+if (typeof Runtime.Core == 'undefined') Runtime.Core = {};
+Runtime.Core.CoreProvider = function(ctx)
 {
 	use("Runtime.CoreStruct").apply(this, arguments);
 };
-Runtime.CoreProvider.prototype = Object.create(use("Runtime.CoreStruct").prototype);
-Runtime.CoreProvider.prototype.constructor = Runtime.CoreProvider;
-Object.assign(Runtime.CoreProvider.prototype,
+Runtime.Core.CoreProvider.prototype = Object.create(use("Runtime.CoreStruct").prototype);
+Runtime.Core.CoreProvider.prototype.constructor = Runtime.Core.CoreProvider;
+Object.assign(Runtime.Core.CoreProvider.prototype,
 {
 	assignObject: function(ctx,o)
 	{
-		if (o instanceof use("Runtime.CoreProvider"))
+		if (o instanceof use("Runtime.Core.CoreProvider"))
 		{
 		}
 		use("Runtime.CoreStruct").prototype.assignObject.call(this,ctx,o);
@@ -44,20 +45,20 @@ Object.assign(Runtime.CoreProvider.prototype,
 	},
 	getClassName: function(ctx)
 	{
-		return "Runtime.CoreProvider";
+		return "Runtime.Core.CoreProvider";
 	},
 });
-Object.assign(Runtime.CoreProvider, use("Runtime.CoreStruct"));
-Object.assign(Runtime.CoreProvider,
+Object.assign(Runtime.Core.CoreProvider, use("Runtime.CoreStruct"));
+Object.assign(Runtime.Core.CoreProvider,
 {
 	/* ======================= Class Init Functions ======================= */
 	getCurrentNamespace: function()
 	{
-		return "Runtime";
+		return "Runtime.Core";
 	},
 	getCurrentClassName: function()
 	{
-		return "Runtime.CoreProvider";
+		return "Runtime.Core.CoreProvider";
 	},
 	getParentClassName: function()
 	{
@@ -70,8 +71,8 @@ Object.assign(Runtime.CoreProvider,
 		var IntrospectionInfo = use("Runtime.Annotations.IntrospectionInfo");
 		return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_CLASS,
-			"class_name": "Runtime.CoreProvider",
-			"name": "Runtime.CoreProvider",
+			"class_name": "Runtime.Core.CoreProvider",
+			"name": "Runtime.Core.CoreProvider",
 			"annotations": Collection.from([
 			]),
 		});
@@ -99,7 +100,5 @@ Object.assign(Runtime.CoreProvider,
 	{
 		return null;
 	},
-});use.add(Runtime.CoreProvider);
-if (module.exports == undefined) module.exports = {};
-if (module.exports.Runtime == undefined) module.exports.Runtime = {};
-module.exports.Runtime.CoreProvider = Runtime.CoreProvider;
+});use.add(Runtime.Core.CoreProvider);
+module.exports = Runtime.Core.CoreProvider;

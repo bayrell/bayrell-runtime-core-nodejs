@@ -16,15 +16,36 @@
  *  limitations under the License.
  */
 
-function ObjectAssign(res, obj){
-	for (var key in obj){
-		if (res[key] == undefined) res[key] = obj[key];
-		else if (res[key] instanceof Object) ObjectAssign(res[key], obj[key]);
-	}
+var exports = {
+	VERSION: '0.10.0',
+	MODULE_NAME: 'Runtime.Core',
 }
 
-module.exports = {
-	VERSION: '0.10.0',
-};
+function add(name)
+{
+	var module_name = exports.MODULE_NAME;
+	
+	name = name
+		.substr(module_name.length + 1)
+		.replace(".", "/")
+	;
+	
+	var path = __dirname + "/" + name + ".js";
+	var obj = require(path);
+}
 
-ObjectAssign(module.exports, require(__dirname + "/Context.js"));
+add("Runtime.Core.Context");
+add("Runtime.Core.CoreDriver");
+add("Runtime.Core.CoreEvent");
+add("Runtime.Core.CoreProvider");
+add("Runtime.Core.Entity");
+add("Runtime.Core.Driver");
+add("Runtime.Core.LambdaChain");
+add("Runtime.Core.LambdaChainDeclare");
+add("Runtime.Core.Message");
+add("Runtime.Core.MessageRPC");
+add("Runtime.Core.MessageSession");
+add("Runtime.Core.ModuleDescription");
+add("Runtime.Core.Provider");
+
+module.exports = exports;

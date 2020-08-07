@@ -18,13 +18,14 @@ var use = require('bayrell').use;
  *  limitations under the License.
  */
 if (typeof Runtime == 'undefined') Runtime = {};
-Runtime.Message = function(ctx)
+if (typeof Runtime.Core == 'undefined') Runtime.Core = {};
+Runtime.Core.Message = function(ctx)
 {
 	use("Runtime.CoreStruct").apply(this, arguments);
 };
-Runtime.Message.prototype = Object.create(use("Runtime.CoreStruct").prototype);
-Runtime.Message.prototype.constructor = Runtime.Message;
-Object.assign(Runtime.Message.prototype,
+Runtime.Core.Message.prototype = Object.create(use("Runtime.CoreStruct").prototype);
+Runtime.Core.Message.prototype.constructor = Runtime.Core.Message;
+Object.assign(Runtime.Core.Message.prototype,
 {
 	_init: function(ctx)
 	{
@@ -38,7 +39,7 @@ Object.assign(Runtime.Message.prototype,
 	},
 	assignObject: function(ctx,o)
 	{
-		if (o instanceof use("Runtime.Message"))
+		if (o instanceof use("Runtime.Core.Message"))
 		{
 			this.message_id = o.message_id;
 			this.is_external = o.is_external;
@@ -63,11 +64,11 @@ Object.assign(Runtime.Message.prototype,
 	},
 	getClassName: function(ctx)
 	{
-		return "Runtime.Message";
+		return "Runtime.Core.Message";
 	},
 });
-Object.assign(Runtime.Message, use("Runtime.CoreStruct"));
-Object.assign(Runtime.Message,
+Object.assign(Runtime.Core.Message, use("Runtime.CoreStruct"));
+Object.assign(Runtime.Core.Message,
 {
 	/**
 	 * Set message id
@@ -86,19 +87,20 @@ Object.assign(Runtime.Message,
 	 */
 	create: function(ctx, items)
 	{
-		var __v0 = new Runtime.Monad(ctx, this.newInstance(ctx, items));
-		var __v1 = use("Runtime.Message");
-		__v0 = __v0.call(ctx, __v1.setMessageId);
-		return __v0.value(ctx);
+		var __v0 = use("Runtime.Monad");
+		var __v1 = new __v0(ctx, this.newInstance(ctx, items));
+		var __v2 = use("Runtime.Core.Message");
+		__v1 = __v1.call(ctx, __v2.setMessageId.bind(__v2));
+		return __v1.value(ctx);
 	},
 	/* ======================= Class Init Functions ======================= */
 	getCurrentNamespace: function()
 	{
-		return "Runtime";
+		return "Runtime.Core";
 	},
 	getCurrentClassName: function()
 	{
-		return "Runtime.Message";
+		return "Runtime.Core.Message";
 	},
 	getParentClassName: function()
 	{
@@ -111,8 +113,8 @@ Object.assign(Runtime.Message,
 		var IntrospectionInfo = use("Runtime.Annotations.IntrospectionInfo");
 		return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_CLASS,
-			"class_name": "Runtime.Message",
-			"name": "Runtime.Message",
+			"class_name": "Runtime.Core.Message",
+			"name": "Runtime.Core.Message",
 			"annotations": Collection.from([
 			]),
 		});
@@ -136,21 +138,21 @@ Object.assign(Runtime.Message,
 		var IntrospectionInfo = use("Runtime.Annotations.IntrospectionInfo");
 		if (field_name == "message_id") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.Message",
+			"class_name": "Runtime.Core.Message",
 			"name": field_name,
 			"annotations": Collection.from([
 			]),
 		});
 		if (field_name == "is_external") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.Message",
+			"class_name": "Runtime.Core.Message",
 			"name": field_name,
 			"annotations": Collection.from([
 			]),
 		});
 		if (field_name == "dict") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.Message",
+			"class_name": "Runtime.Core.Message",
 			"name": field_name,
 			"annotations": Collection.from([
 			]),
@@ -167,7 +169,5 @@ Object.assign(Runtime.Message,
 	{
 		return null;
 	},
-});use.add(Runtime.Message);
-if (module.exports == undefined) module.exports = {};
-if (module.exports.Runtime == undefined) module.exports.Runtime = {};
-module.exports.Runtime.Message = Runtime.Message;
+});use.add(Runtime.Core.Message);
+module.exports = Runtime.Core.Message;

@@ -18,17 +18,18 @@ var use = require('bayrell').use;
  *  limitations under the License.
  */
 if (typeof Runtime == 'undefined') Runtime = {};
-Runtime.MessageSession = function(ctx)
+if (typeof Runtime.Core == 'undefined') Runtime.Core = {};
+Runtime.Core.MessageSession = function(ctx)
 {
 	use("Runtime.CoreStruct").apply(this, arguments);
 };
-Runtime.MessageSession.prototype = Object.create(use("Runtime.CoreStruct").prototype);
-Runtime.MessageSession.prototype.constructor = Runtime.MessageSession;
-Object.assign(Runtime.MessageSession.prototype,
+Runtime.Core.MessageSession.prototype = Object.create(use("Runtime.CoreStruct").prototype);
+Runtime.Core.MessageSession.prototype.constructor = Runtime.Core.MessageSession;
+Object.assign(Runtime.Core.MessageSession.prototype,
 {
 	assignObject: function(ctx,o)
 	{
-		if (o instanceof use("Runtime.MessageSession"))
+		if (o instanceof use("Runtime.Core.MessageSession"))
 		{
 		}
 		use("Runtime.CoreStruct").prototype.assignObject.call(this,ctx,o);
@@ -44,20 +45,20 @@ Object.assign(Runtime.MessageSession.prototype,
 	},
 	getClassName: function(ctx)
 	{
-		return "Runtime.MessageSession";
+		return "Runtime.Core.MessageSession";
 	},
 });
-Object.assign(Runtime.MessageSession, use("Runtime.CoreStruct"));
-Object.assign(Runtime.MessageSession,
+Object.assign(Runtime.Core.MessageSession, use("Runtime.CoreStruct"));
+Object.assign(Runtime.Core.MessageSession,
 {
 	/* ======================= Class Init Functions ======================= */
 	getCurrentNamespace: function()
 	{
-		return "Runtime";
+		return "Runtime.Core";
 	},
 	getCurrentClassName: function()
 	{
-		return "Runtime.MessageSession";
+		return "Runtime.Core.MessageSession";
 	},
 	getParentClassName: function()
 	{
@@ -70,8 +71,8 @@ Object.assign(Runtime.MessageSession,
 		var IntrospectionInfo = use("Runtime.Annotations.IntrospectionInfo");
 		return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_CLASS,
-			"class_name": "Runtime.MessageSession",
-			"name": "Runtime.MessageSession",
+			"class_name": "Runtime.Core.MessageSession",
+			"name": "Runtime.Core.MessageSession",
 			"annotations": Collection.from([
 			]),
 		});
@@ -99,7 +100,5 @@ Object.assign(Runtime.MessageSession,
 	{
 		return null;
 	},
-});use.add(Runtime.MessageSession);
-if (module.exports == undefined) module.exports = {};
-if (module.exports.Runtime == undefined) module.exports.Runtime = {};
-module.exports.Runtime.MessageSession = Runtime.MessageSession;
+});use.add(Runtime.Core.MessageSession);
+module.exports = Runtime.Core.MessageSession;

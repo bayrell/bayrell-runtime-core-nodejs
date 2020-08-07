@@ -18,14 +18,14 @@ var use = require('bayrell').use;
  *  limitations under the License.
  */
 if (typeof Runtime == 'undefined') Runtime = {};
-if (typeof Runtime.Annotations == 'undefined') Runtime.Annotations = {};
-Runtime.Annotations.LambdaChainDeclare = function(ctx)
+if (typeof Runtime.Core == 'undefined') Runtime.Core = {};
+Runtime.Core.LambdaChainDeclare = function(ctx)
 {
 	use("Runtime.CoreStruct").apply(this, arguments);
 };
-Runtime.Annotations.LambdaChainDeclare.prototype = Object.create(use("Runtime.CoreStruct").prototype);
-Runtime.Annotations.LambdaChainDeclare.prototype.constructor = Runtime.Annotations.LambdaChainDeclare;
-Object.assign(Runtime.Annotations.LambdaChainDeclare.prototype,
+Runtime.Core.LambdaChainDeclare.prototype = Object.create(use("Runtime.CoreStruct").prototype);
+Runtime.Core.LambdaChainDeclare.prototype.constructor = Runtime.Core.LambdaChainDeclare;
+Object.assign(Runtime.Core.LambdaChainDeclare.prototype,
 {
 	logName: function(ctx)
 	{
@@ -41,7 +41,7 @@ Object.assign(Runtime.Annotations.LambdaChainDeclare.prototype,
 	},
 	assignObject: function(ctx,o)
 	{
-		if (o instanceof use("Runtime.Annotations.LambdaChainDeclare"))
+		if (o instanceof use("Runtime.Core.LambdaChainDeclare"))
 		{
 			this.name = o.name;
 			this.is_await = o.is_await;
@@ -63,20 +63,20 @@ Object.assign(Runtime.Annotations.LambdaChainDeclare.prototype,
 	},
 	getClassName: function(ctx)
 	{
-		return "Runtime.Annotations.LambdaChainDeclare";
+		return "Runtime.Core.LambdaChainDeclare";
 	},
 });
-Object.assign(Runtime.Annotations.LambdaChainDeclare, use("Runtime.CoreStruct"));
-Object.assign(Runtime.Annotations.LambdaChainDeclare,
+Object.assign(Runtime.Core.LambdaChainDeclare, use("Runtime.CoreStruct"));
+Object.assign(Runtime.Core.LambdaChainDeclare,
 {
 	/* ======================= Class Init Functions ======================= */
 	getCurrentNamespace: function()
 	{
-		return "Runtime.Annotations";
+		return "Runtime.Core";
 	},
 	getCurrentClassName: function()
 	{
-		return "Runtime.Annotations.LambdaChainDeclare";
+		return "Runtime.Core.LambdaChainDeclare";
 	},
 	getParentClassName: function()
 	{
@@ -89,8 +89,8 @@ Object.assign(Runtime.Annotations.LambdaChainDeclare,
 		var IntrospectionInfo = use("Runtime.Annotations.IntrospectionInfo");
 		return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_CLASS,
-			"class_name": "Runtime.Annotations.LambdaChainDeclare",
-			"name": "Runtime.Annotations.LambdaChainDeclare",
+			"class_name": "Runtime.Core.LambdaChainDeclare",
+			"name": "Runtime.Core.LambdaChainDeclare",
 			"annotations": Collection.from([
 			]),
 		});
@@ -113,14 +113,14 @@ Object.assign(Runtime.Annotations.LambdaChainDeclare,
 		var IntrospectionInfo = use("Runtime.Annotations.IntrospectionInfo");
 		if (field_name == "name") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.Annotations.LambdaChainDeclare",
+			"class_name": "Runtime.Core.LambdaChainDeclare",
 			"name": field_name,
 			"annotations": Collection.from([
 			]),
 		});
 		if (field_name == "is_await") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.Annotations.LambdaChainDeclare",
+			"class_name": "Runtime.Core.LambdaChainDeclare",
 			"name": field_name,
 			"annotations": Collection.from([
 			]),
@@ -141,8 +141,5 @@ Object.assign(Runtime.Annotations.LambdaChainDeclare,
 	[
 		use("Runtime.Interfaces.EntityInterface"),
 	],
-});use.add(Runtime.Annotations.LambdaChainDeclare);
-if (module.exports == undefined) module.exports = {};
-if (module.exports.Runtime == undefined) module.exports.Runtime = {};
-if (module.exports.Runtime.Annotations == undefined) module.exports.Runtime.Annotations = {};
-module.exports.Runtime.Annotations.LambdaChainDeclare = Runtime.Annotations.LambdaChainDeclare;
+});use.add(Runtime.Core.LambdaChainDeclare);
+module.exports = Runtime.Core.LambdaChainDeclare;

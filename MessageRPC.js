@@ -18,13 +18,14 @@ var use = require('bayrell').use;
  *  limitations under the License.
  */
 if (typeof Runtime == 'undefined') Runtime = {};
-Runtime.MessageRPC = function(ctx)
+if (typeof Runtime.Core == 'undefined') Runtime.Core = {};
+Runtime.Core.MessageRPC = function(ctx)
 {
-	use("Runtime.Message").apply(this, arguments);
+	use("Runtime.Core.Message").apply(this, arguments);
 };
-Runtime.MessageRPC.prototype = Object.create(use("Runtime.Message").prototype);
-Runtime.MessageRPC.prototype.constructor = Runtime.MessageRPC;
-Object.assign(Runtime.MessageRPC.prototype,
+Runtime.Core.MessageRPC.prototype = Object.create(use("Runtime.Core.Message").prototype);
+Runtime.Core.MessageRPC.prototype.constructor = Runtime.Core.MessageRPC;
+Object.assign(Runtime.Core.MessageRPC.prototype,
 {
 	_init: function(ctx)
 	{
@@ -43,11 +44,11 @@ Object.assign(Runtime.MessageRPC.prototype,
 		this.response = null;
 		this.logs = null;
 		this.have_answer = false;
-		use("Runtime.Message").prototype._init.call(this,ctx);
+		use("Runtime.Core.Message").prototype._init.call(this,ctx);
 	},
 	assignObject: function(ctx,o)
 	{
-		if (o instanceof use("Runtime.MessageRPC"))
+		if (o instanceof use("Runtime.Core.MessageRPC"))
 		{
 			this.uri = o.uri;
 			this.api_name = o.api_name;
@@ -63,7 +64,7 @@ Object.assign(Runtime.MessageRPC.prototype,
 			this.logs = o.logs;
 			this.have_answer = o.have_answer;
 		}
-		use("Runtime.Message").prototype.assignObject.call(this,ctx,o);
+		use("Runtime.Core.Message").prototype.assignObject.call(this,ctx,o);
 	},
 	assignValue: function(ctx,k,v)
 	{
@@ -80,7 +81,7 @@ Object.assign(Runtime.MessageRPC.prototype,
 		else if (k == "response")this.response = v;
 		else if (k == "logs")this.logs = v;
 		else if (k == "have_answer")this.have_answer = v;
-		else use("Runtime.Message").prototype.assignValue.call(this,ctx,k,v);
+		else use("Runtime.Core.Message").prototype.assignValue.call(this,ctx,k,v);
 	},
 	takeValue: function(ctx,k,d)
 	{
@@ -98,15 +99,15 @@ Object.assign(Runtime.MessageRPC.prototype,
 		else if (k == "response")return this.response;
 		else if (k == "logs")return this.logs;
 		else if (k == "have_answer")return this.have_answer;
-		return use("Runtime.Message").prototype.takeValue.call(this,ctx,k,d);
+		return use("Runtime.Core.Message").prototype.takeValue.call(this,ctx,k,d);
 	},
 	getClassName: function(ctx)
 	{
-		return "Runtime.MessageRPC";
+		return "Runtime.Core.MessageRPC";
 	},
 });
-Object.assign(Runtime.MessageRPC, use("Runtime.Message"));
-Object.assign(Runtime.MessageRPC,
+Object.assign(Runtime.Core.MessageRPC, use("Runtime.Core.Message"));
+Object.assign(Runtime.Core.MessageRPC,
 {
 	/**
 	 * Returns true if success
@@ -174,21 +175,21 @@ Object.assign(Runtime.MessageRPC,
 			return m;
 		}
 		var __v0 = use("Runtime.Monad");
-		var __v1 = use("Runtime.MessageRPC");
+		var __v1 = use("Runtime.Core.MessageRPC");
 		return new __v0(ctx, new __v1(ctx, use("Runtime.Dict").from({"error":m.err.getErrorMessage(ctx),"error_name":m.err.getClassName(ctx),"code":m.err.getErrorCode(ctx),"response":m.err})));
 	},
 	/* ======================= Class Init Functions ======================= */
 	getCurrentNamespace: function()
 	{
-		return "Runtime";
+		return "Runtime.Core";
 	},
 	getCurrentClassName: function()
 	{
-		return "Runtime.MessageRPC";
+		return "Runtime.Core.MessageRPC";
 	},
 	getParentClassName: function()
 	{
-		return "Runtime.Message";
+		return "Runtime.Core.Message";
 	},
 	getClassInfo: function(ctx)
 	{
@@ -197,8 +198,8 @@ Object.assign(Runtime.MessageRPC,
 		var IntrospectionInfo = use("Runtime.Annotations.IntrospectionInfo");
 		return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_CLASS,
-			"class_name": "Runtime.MessageRPC",
-			"name": "Runtime.MessageRPC",
+			"class_name": "Runtime.Core.MessageRPC",
+			"name": "Runtime.Core.MessageRPC",
 			"annotations": Collection.from([
 			]),
 		});
@@ -232,91 +233,91 @@ Object.assign(Runtime.MessageRPC,
 		var IntrospectionInfo = use("Runtime.Annotations.IntrospectionInfo");
 		if (field_name == "uri") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.MessageRPC",
+			"class_name": "Runtime.Core.MessageRPC",
 			"name": field_name,
 			"annotations": Collection.from([
 			]),
 		});
 		if (field_name == "api_name") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.MessageRPC",
+			"class_name": "Runtime.Core.MessageRPC",
 			"name": field_name,
 			"annotations": Collection.from([
 			]),
 		});
 		if (field_name == "space_name") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.MessageRPC",
+			"class_name": "Runtime.Core.MessageRPC",
 			"name": field_name,
 			"annotations": Collection.from([
 			]),
 		});
 		if (field_name == "method_name") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.MessageRPC",
+			"class_name": "Runtime.Core.MessageRPC",
 			"name": field_name,
 			"annotations": Collection.from([
 			]),
 		});
 		if (field_name == "data") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.MessageRPC",
+			"class_name": "Runtime.Core.MessageRPC",
 			"name": field_name,
 			"annotations": Collection.from([
 			]),
 		});
 		if (field_name == "code") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.MessageRPC",
+			"class_name": "Runtime.Core.MessageRPC",
 			"name": field_name,
 			"annotations": Collection.from([
 			]),
 		});
 		if (field_name == "success_message") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.MessageRPC",
+			"class_name": "Runtime.Core.MessageRPC",
 			"name": field_name,
 			"annotations": Collection.from([
 			]),
 		});
 		if (field_name == "error") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.MessageRPC",
+			"class_name": "Runtime.Core.MessageRPC",
 			"name": field_name,
 			"annotations": Collection.from([
 			]),
 		});
 		if (field_name == "error_name") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.MessageRPC",
+			"class_name": "Runtime.Core.MessageRPC",
 			"name": field_name,
 			"annotations": Collection.from([
 			]),
 		});
 		if (field_name == "error_trace") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.MessageRPC",
+			"class_name": "Runtime.Core.MessageRPC",
 			"name": field_name,
 			"annotations": Collection.from([
 			]),
 		});
 		if (field_name == "response") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.MessageRPC",
+			"class_name": "Runtime.Core.MessageRPC",
 			"name": field_name,
 			"annotations": Collection.from([
 			]),
 		});
 		if (field_name == "logs") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.MessageRPC",
+			"class_name": "Runtime.Core.MessageRPC",
 			"name": field_name,
 			"annotations": Collection.from([
 			]),
 		});
 		if (field_name == "have_answer") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.MessageRPC",
+			"class_name": "Runtime.Core.MessageRPC",
 			"name": field_name,
 			"annotations": Collection.from([
 			]),
@@ -333,7 +334,5 @@ Object.assign(Runtime.MessageRPC,
 	{
 		return null;
 	},
-});use.add(Runtime.MessageRPC);
-if (module.exports == undefined) module.exports = {};
-if (module.exports.Runtime == undefined) module.exports.Runtime = {};
-module.exports.Runtime.MessageRPC = Runtime.MessageRPC;
+});use.add(Runtime.Core.MessageRPC);
+module.exports = Runtime.Core.MessageRPC;

@@ -18,51 +18,51 @@ var use = require('bayrell').use;
  *  limitations under the License.
  */
 if (typeof Runtime == 'undefined') Runtime = {};
-if (typeof Runtime.Annotations == 'undefined') Runtime.Annotations = {};
-Runtime.Annotations.Driver = function(ctx)
+if (typeof Runtime.Core == 'undefined') Runtime.Core = {};
+Runtime.Core.Driver = function(ctx)
 {
-	use("Runtime.Annotations.Entity").apply(this, arguments);
+	use("Runtime.Core.Entity").apply(this, arguments);
 };
-Runtime.Annotations.Driver.prototype = Object.create(use("Runtime.Annotations.Entity").prototype);
-Runtime.Annotations.Driver.prototype.constructor = Runtime.Annotations.Driver;
-Object.assign(Runtime.Annotations.Driver.prototype,
+Runtime.Core.Driver.prototype = Object.create(use("Runtime.Core.Entity").prototype);
+Runtime.Core.Driver.prototype.constructor = Runtime.Core.Driver;
+Object.assign(Runtime.Core.Driver.prototype,
 {
 	assignObject: function(ctx,o)
 	{
-		if (o instanceof use("Runtime.Annotations.Driver"))
+		if (o instanceof use("Runtime.Core.Driver"))
 		{
 		}
-		use("Runtime.Annotations.Entity").prototype.assignObject.call(this,ctx,o);
+		use("Runtime.Core.Entity").prototype.assignObject.call(this,ctx,o);
 	},
 	assignValue: function(ctx,k,v)
 	{
-		use("Runtime.Annotations.Entity").prototype.assignValue.call(this,ctx,k,v);
+		use("Runtime.Core.Entity").prototype.assignValue.call(this,ctx,k,v);
 	},
 	takeValue: function(ctx,k,d)
 	{
 		if (d == undefined) d = null;
-		return use("Runtime.Annotations.Entity").prototype.takeValue.call(this,ctx,k,d);
+		return use("Runtime.Core.Entity").prototype.takeValue.call(this,ctx,k,d);
 	},
 	getClassName: function(ctx)
 	{
-		return "Runtime.Annotations.Driver";
+		return "Runtime.Core.Driver";
 	},
 });
-Object.assign(Runtime.Annotations.Driver, use("Runtime.Annotations.Entity"));
-Object.assign(Runtime.Annotations.Driver,
+Object.assign(Runtime.Core.Driver, use("Runtime.Core.Entity"));
+Object.assign(Runtime.Core.Driver,
 {
 	/* ======================= Class Init Functions ======================= */
 	getCurrentNamespace: function()
 	{
-		return "Runtime.Annotations";
+		return "Runtime.Core";
 	},
 	getCurrentClassName: function()
 	{
-		return "Runtime.Annotations.Driver";
+		return "Runtime.Core.Driver";
 	},
 	getParentClassName: function()
 	{
-		return "Runtime.Annotations.Entity";
+		return "Runtime.Core.Entity";
 	},
 	getClassInfo: function(ctx)
 	{
@@ -71,8 +71,8 @@ Object.assign(Runtime.Annotations.Driver,
 		var IntrospectionInfo = use("Runtime.Annotations.IntrospectionInfo");
 		return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_CLASS,
-			"class_name": "Runtime.Annotations.Driver",
-			"name": "Runtime.Annotations.Driver",
+			"class_name": "Runtime.Core.Driver",
+			"name": "Runtime.Core.Driver",
 			"annotations": Collection.from([
 			]),
 		});
@@ -100,8 +100,5 @@ Object.assign(Runtime.Annotations.Driver,
 	{
 		return null;
 	},
-});use.add(Runtime.Annotations.Driver);
-if (module.exports == undefined) module.exports = {};
-if (module.exports.Runtime == undefined) module.exports.Runtime = {};
-if (module.exports.Runtime.Annotations == undefined) module.exports.Runtime.Annotations = {};
-module.exports.Runtime.Annotations.Driver = Runtime.Annotations.Driver;
+});use.add(Runtime.Core.Driver);
+module.exports = Runtime.Core.Driver;

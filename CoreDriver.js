@@ -18,30 +18,24 @@ var use = require('bayrell').use;
  *  limitations under the License.
  */
 if (typeof Runtime == 'undefined') Runtime = {};
-Runtime.CoreDriver = function(ctx)
+if (typeof Runtime.Core == 'undefined') Runtime.Core = {};
+Runtime.Core.CoreDriver = function(ctx)
 {
 	use("Runtime.CoreObject").call(this, ctx);
 };
-Runtime.CoreDriver.prototype = Object.create(use("Runtime.CoreObject").prototype);
-Runtime.CoreDriver.prototype.constructor = Runtime.CoreDriver;
-Object.assign(Runtime.CoreDriver.prototype,
+Runtime.Core.CoreDriver.prototype = Object.create(use("Runtime.CoreObject").prototype);
+Runtime.Core.CoreDriver.prototype.constructor = Runtime.Core.CoreDriver;
+Object.assign(Runtime.Core.CoreDriver.prototype,
 {
 	/**
 	 * Start driver
 	 */
-	startDriver: function(ctx)
+	startDriver: async function(ctx)
 	{
-		return (__async_t) =>
-		{
-			if (__async_t.pos(ctx) == "0")
-			{
-			}
-			return __async_t.ret_void(ctx);
-		};
 	},
 	assignObject: function(ctx,o)
 	{
-		if (o instanceof use("Runtime.CoreDriver"))
+		if (o instanceof use("Runtime.Core.CoreDriver"))
 		{
 		}
 		use("Runtime.CoreObject").prototype.assignObject.call(this,ctx,o);
@@ -57,20 +51,20 @@ Object.assign(Runtime.CoreDriver.prototype,
 	},
 	getClassName: function(ctx)
 	{
-		return "Runtime.CoreDriver";
+		return "Runtime.Core.CoreDriver";
 	},
 });
-Object.assign(Runtime.CoreDriver, use("Runtime.CoreObject"));
-Object.assign(Runtime.CoreDriver,
+Object.assign(Runtime.Core.CoreDriver, use("Runtime.CoreObject"));
+Object.assign(Runtime.Core.CoreDriver,
 {
 	/* ======================= Class Init Functions ======================= */
 	getCurrentNamespace: function()
 	{
-		return "Runtime";
+		return "Runtime.Core";
 	},
 	getCurrentClassName: function()
 	{
-		return "Runtime.CoreDriver";
+		return "Runtime.Core.CoreDriver";
 	},
 	getParentClassName: function()
 	{
@@ -83,8 +77,8 @@ Object.assign(Runtime.CoreDriver,
 		var IntrospectionInfo = use("Runtime.Annotations.IntrospectionInfo");
 		return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_CLASS,
-			"class_name": "Runtime.CoreDriver",
-			"name": "Runtime.CoreDriver",
+			"class_name": "Runtime.Core.CoreDriver",
+			"name": "Runtime.Core.CoreDriver",
 			"annotations": Collection.from([
 			]),
 		});
@@ -112,7 +106,5 @@ Object.assign(Runtime.CoreDriver,
 	{
 		return null;
 	},
-});use.add(Runtime.CoreDriver);
-if (module.exports == undefined) module.exports = {};
-if (module.exports.Runtime == undefined) module.exports.Runtime = {};
-module.exports.Runtime.CoreDriver = Runtime.CoreDriver;
+});use.add(Runtime.Core.CoreDriver);
+module.exports = Runtime.Core.CoreDriver;

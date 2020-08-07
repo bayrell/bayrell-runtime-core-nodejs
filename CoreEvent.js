@@ -18,13 +18,14 @@ var use = require('bayrell').use;
  *  limitations under the License.
  */
 if (typeof Runtime == 'undefined') Runtime = {};
-Runtime.CoreEvent = function(ctx)
+if (typeof Runtime.Core == 'undefined') Runtime.Core = {};
+Runtime.Core.CoreEvent = function(ctx)
 {
 	use("Runtime.CoreStruct").apply(this, arguments);
 };
-Runtime.CoreEvent.prototype = Object.create(use("Runtime.CoreStruct").prototype);
-Runtime.CoreEvent.prototype.constructor = Runtime.CoreEvent;
-Object.assign(Runtime.CoreEvent.prototype,
+Runtime.Core.CoreEvent.prototype = Object.create(use("Runtime.CoreStruct").prototype);
+Runtime.Core.CoreEvent.prototype.constructor = Runtime.Core.CoreEvent;
+Object.assign(Runtime.Core.CoreEvent.prototype,
 {
 	_init: function(ctx)
 	{
@@ -35,7 +36,7 @@ Object.assign(Runtime.CoreEvent.prototype,
 	},
 	assignObject: function(ctx,o)
 	{
-		if (o instanceof use("Runtime.CoreEvent"))
+		if (o instanceof use("Runtime.Core.CoreEvent"))
 		{
 			this.sender = o.sender;
 		}
@@ -54,20 +55,20 @@ Object.assign(Runtime.CoreEvent.prototype,
 	},
 	getClassName: function(ctx)
 	{
-		return "Runtime.CoreEvent";
+		return "Runtime.Core.CoreEvent";
 	},
 });
-Object.assign(Runtime.CoreEvent, use("Runtime.CoreStruct"));
-Object.assign(Runtime.CoreEvent,
+Object.assign(Runtime.Core.CoreEvent, use("Runtime.CoreStruct"));
+Object.assign(Runtime.Core.CoreEvent,
 {
 	/* ======================= Class Init Functions ======================= */
 	getCurrentNamespace: function()
 	{
-		return "Runtime";
+		return "Runtime.Core";
 	},
 	getCurrentClassName: function()
 	{
-		return "Runtime.CoreEvent";
+		return "Runtime.Core.CoreEvent";
 	},
 	getParentClassName: function()
 	{
@@ -80,8 +81,8 @@ Object.assign(Runtime.CoreEvent,
 		var IntrospectionInfo = use("Runtime.Annotations.IntrospectionInfo");
 		return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_CLASS,
-			"class_name": "Runtime.CoreEvent",
-			"name": "Runtime.CoreEvent",
+			"class_name": "Runtime.Core.CoreEvent",
+			"name": "Runtime.Core.CoreEvent",
 			"annotations": Collection.from([
 			]),
 		});
@@ -103,7 +104,7 @@ Object.assign(Runtime.CoreEvent,
 		var IntrospectionInfo = use("Runtime.Annotations.IntrospectionInfo");
 		if (field_name == "sender") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.CoreEvent",
+			"class_name": "Runtime.Core.CoreEvent",
 			"name": field_name,
 			"annotations": Collection.from([
 			]),
@@ -120,7 +121,5 @@ Object.assign(Runtime.CoreEvent,
 	{
 		return null;
 	},
-});use.add(Runtime.CoreEvent);
-if (module.exports == undefined) module.exports = {};
-if (module.exports.Runtime == undefined) module.exports.Runtime = {};
-module.exports.Runtime.CoreEvent = Runtime.CoreEvent;
+});use.add(Runtime.Core.CoreEvent);
+module.exports = Runtime.Core.CoreEvent;
