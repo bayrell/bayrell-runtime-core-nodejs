@@ -21,9 +21,9 @@ if (typeof Runtime == 'undefined') Runtime = {};
 if (typeof Runtime.Core == 'undefined') Runtime.Core = {};
 Runtime.Core.LambdaChain = function(ctx)
 {
-	use("Runtime.CoreStruct").apply(this, arguments);
+	use("Runtime.BaseStruct").apply(this, arguments);
 };
-Runtime.Core.LambdaChain.prototype = Object.create(use("Runtime.CoreStruct").prototype);
+Runtime.Core.LambdaChain.prototype = Object.create(use("Runtime.BaseStruct").prototype);
 Runtime.Core.LambdaChain.prototype.constructor = Runtime.Core.LambdaChain;
 Object.assign(Runtime.Core.LambdaChain.prototype,
 {
@@ -40,7 +40,7 @@ Object.assign(Runtime.Core.LambdaChain.prototype,
 		this.chain = "";
 		this.pos = 0;
 		this.is_await = false;
-		use("Runtime.CoreStruct").prototype._init.call(this,ctx);
+		use("Runtime.BaseStruct").prototype._init.call(this,ctx);
 	},
 	assignObject: function(ctx,o)
 	{
@@ -52,7 +52,7 @@ Object.assign(Runtime.Core.LambdaChain.prototype,
 			this.pos = o.pos;
 			this.is_await = o.is_await;
 		}
-		use("Runtime.CoreStruct").prototype.assignObject.call(this,ctx,o);
+		use("Runtime.BaseStruct").prototype.assignObject.call(this,ctx,o);
 	},
 	assignValue: function(ctx,k,v)
 	{
@@ -61,7 +61,7 @@ Object.assign(Runtime.Core.LambdaChain.prototype,
 		else if (k == "chain")this.chain = v;
 		else if (k == "pos")this.pos = v;
 		else if (k == "is_await")this.is_await = v;
-		else use("Runtime.CoreStruct").prototype.assignValue.call(this,ctx,k,v);
+		else use("Runtime.BaseStruct").prototype.assignValue.call(this,ctx,k,v);
 	},
 	takeValue: function(ctx,k,d)
 	{
@@ -71,14 +71,14 @@ Object.assign(Runtime.Core.LambdaChain.prototype,
 		else if (k == "chain")return this.chain;
 		else if (k == "pos")return this.pos;
 		else if (k == "is_await")return this.is_await;
-		return use("Runtime.CoreStruct").prototype.takeValue.call(this,ctx,k,d);
+		return use("Runtime.BaseStruct").prototype.takeValue.call(this,ctx,k,d);
 	},
 	getClassName: function(ctx)
 	{
 		return "Runtime.Core.LambdaChain";
 	},
 });
-Object.assign(Runtime.Core.LambdaChain, use("Runtime.CoreStruct"));
+Object.assign(Runtime.Core.LambdaChain, use("Runtime.BaseStruct"));
 Object.assign(Runtime.Core.LambdaChain,
 {
 	/* ======================= Class Init Functions ======================= */
@@ -92,7 +92,7 @@ Object.assign(Runtime.Core.LambdaChain,
 	},
 	getParentClassName: function()
 	{
-		return "Runtime.CoreStruct";
+		return "Runtime.BaseStruct";
 	},
 	getClassInfo: function(ctx)
 	{

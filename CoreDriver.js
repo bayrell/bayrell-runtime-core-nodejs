@@ -21,9 +21,9 @@ if (typeof Runtime == 'undefined') Runtime = {};
 if (typeof Runtime.Core == 'undefined') Runtime.Core = {};
 Runtime.Core.CoreDriver = function(ctx)
 {
-	use("Runtime.CoreObject").call(this, ctx);
+	use("Runtime.Core.CoreObject").apply(this, arguments);
 };
-Runtime.Core.CoreDriver.prototype = Object.create(use("Runtime.CoreObject").prototype);
+Runtime.Core.CoreDriver.prototype = Object.create(use("Runtime.Core.CoreObject").prototype);
 Runtime.Core.CoreDriver.prototype.constructor = Runtime.Core.CoreDriver;
 Object.assign(Runtime.Core.CoreDriver.prototype,
 {
@@ -38,23 +38,23 @@ Object.assign(Runtime.Core.CoreDriver.prototype,
 		if (o instanceof use("Runtime.Core.CoreDriver"))
 		{
 		}
-		use("Runtime.CoreObject").prototype.assignObject.call(this,ctx,o);
+		use("Runtime.Core.CoreObject").prototype.assignObject.call(this,ctx,o);
 	},
 	assignValue: function(ctx,k,v)
 	{
-		use("Runtime.CoreObject").prototype.assignValue.call(this,ctx,k,v);
+		use("Runtime.Core.CoreObject").prototype.assignValue.call(this,ctx,k,v);
 	},
 	takeValue: function(ctx,k,d)
 	{
 		if (d == undefined) d = null;
-		return use("Runtime.CoreObject").prototype.takeValue.call(this,ctx,k,d);
+		return use("Runtime.Core.CoreObject").prototype.takeValue.call(this,ctx,k,d);
 	},
 	getClassName: function(ctx)
 	{
 		return "Runtime.Core.CoreDriver";
 	},
 });
-Object.assign(Runtime.Core.CoreDriver, use("Runtime.CoreObject"));
+Object.assign(Runtime.Core.CoreDriver, use("Runtime.Core.CoreObject"));
 Object.assign(Runtime.Core.CoreDriver,
 {
 	/* ======================= Class Init Functions ======================= */
@@ -68,7 +68,7 @@ Object.assign(Runtime.Core.CoreDriver,
 	},
 	getParentClassName: function()
 	{
-		return "Runtime.CoreObject";
+		return "Runtime.Core.CoreObject";
 	},
 	getClassInfo: function(ctx)
 	{

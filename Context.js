@@ -21,9 +21,9 @@ if (typeof Runtime == 'undefined') Runtime = {};
 if (typeof Runtime.Core == 'undefined') Runtime.Core = {};
 Runtime.Core.Context = function(ctx)
 {
-	use("Runtime.CoreStruct").apply(this, arguments);
+	use("Runtime.BaseStruct").apply(this, arguments);
 };
-Runtime.Core.Context.prototype = Object.create(use("Runtime.CoreStruct").prototype);
+Runtime.Core.Context.prototype = Object.create(use("Runtime.BaseStruct").prototype);
 Runtime.Core.Context.prototype.constructor = Runtime.Core.Context;
 Object.assign(Runtime.Core.Context.prototype,
 {
@@ -68,73 +68,75 @@ Object.assign(Runtime.Core.Context.prototype,
 		__v1 = __v1.call(ctx, __v2.get(ctx, key, ""));
 		return __v1.value(ctx);
 	},
-	/* ---------------- Driver & Provider --------------- */
+	/* ------------------ Object Manager ---------------- */
+	/**
+	 * Add object
+	 */
+	addObject: function(ctx, obj, object_name)
+	{
+		if (object_name == undefined) object_name = "";
+		this.object_manager.addObject(ctx, obj, object_name);
+		return this;
+	},
+	/**
+	 * Get object
+	 */
+	getObject: function(ctx, object_name)
+	{
+		return this.object_manager.getObject(ctx, object_name);
+	},
 	/**
 	 * Get driver
-	 *
-	 * @params string driver_name
-	 * @return Runtime.anager
 	 */
 	getDriver: function(ctx, driver_name)
 	{
-		return this.drivers.get(ctx, driver_name, null);
+		return this.object_manager.getDriver(ctx, driver_name);
 	},
 	/**
-	 * Create provider
-	 *
-	 * @params string provider_name
-	 * @return CoreProvider
+	 * Remove object
 	 */
-	createProvider: function(ctx, provider_name, params, settings_name)
+	removeObject: function(ctx, object_name)
 	{
-		if (params == undefined) params = null;
-		if (settings_name == undefined) settings_name = "default";
-		var provider = null;
-		if (this.providers.has(ctx, provider_name))
-		{
-			var info = this.providers.item(ctx, provider_name);
-			var __v0 = use("Runtime.Core.Provider");
-			if (info.kind == __v0.KIND_INTERFACE)
-			{
-				var __v1 = use("Runtime.Exceptions.RuntimeException");
-				throw new __v1(ctx, "Provider " + use("Runtime.rtl").toStr(provider_name) + use("Runtime.rtl").toStr(" does not declared"))
-			}
-			var class_name = info.className(ctx);
-			/* Set default params */
-			if (params == null)
-			{
-				var __v0 = use("Runtime.rtl");
-				params = __v0.attr(ctx, this.settings, use("Runtime.Collection").from(["providers",class_name,settings_name]));
-			}
-			if (params == null)
-			{
-				params = use("Runtime.Dict").from({});
-			}
-			var __v0 = use("Runtime.rtl");
-			provider = __v0.newInstance(ctx, class_name, use("Runtime.Collection").from([params]));
-			provider = this.chain(ctx, class_name, use("Runtime.Collection").from([provider]));
-			if (provider_name != class_name)
-			{
-				provider = this.chain(ctx, provider_name, use("Runtime.Collection").from([provider]));
-			}
-		}
-		else
-		{
-			var __v1 = use("Runtime.Exceptions.RuntimeException");
-			throw new __v1(ctx, "Provider " + use("Runtime.rtl").toStr(provider_name) + use("Runtime.rtl").toStr(" not found"))
-		}
-		return provider;
+		this.object_manager.removeObject(ctx, object_name);
+		return this;
 	},
 	/**
-	 * Returns provider
-	 *
-	 * @params string provider_name
-	 * @return CoreProvider
+	 * Send message
+	 * @param Message msg
+	 * @return Message
 	 */
-	getProvider: function(ctx, provider_name, settings_name)
+	sendLocalMessage: async function(ctx, msg)
 	{
-		if (settings_name == undefined) settings_name = "default";
-		return this.createProvider(ctx, provider_name, null, settings_name);
+		await this.object_manager.sendMessage(ctx, msg);
+	},
+	/**
+	 * Remote call
+	 * @param Dict items
+	 * @return RemoteCallResponse
+	 */
+	remoteLocalCall: async function(ctx, items)
+	{
+		return await this.object_manager.remoteCall(ctx, items);
+	},
+	/**
+	 * Send message
+	 * @param Message msg
+	 * @return Message
+	 */
+	sendBusMessage: async function(ctx, msg)
+	{
+		var driver = this.getDriver(ctx, "default:external_bus");
+		await driver.sendMessage(ctx, msg);
+	},
+	/**
+	 * Remote call
+	 * @param Dict items
+	 * @return RemoteCallResponse
+	 */
+	remoteBusCall: async function(ctx, items)
+	{
+		var driver = this.getDriver(ctx, "default:external_bus");
+		return Promise.resolve(await driver.remoteCall(ctx, items));
 	},
 	/* ---------------------- Chain --------------------- */
 	/**
@@ -243,120 +245,54 @@ Object.assign(Runtime.Core.Context.prototype,
 		}, message));
 		return message;
 	},
-	/* ----------------------- Bus ---------------------- */
+	/**
+	 * Push message to frontend client
+	 * @param Message msg
+	 * @return Message
+	 */
+	pushExternalMessage: async function(ctx, msg)
+	{
+		var driver = this.getDriver(ctx, "default:external_bus");
+		await driver.pushMessage(ctx, msg);
+	},
 	/**
 	 * Send message
 	 * @param Message msg
 	 * @return Message
 	 */
-	send: function(ctx, msg)
+	sendSystemMessage: async function(ctx, msg)
 	{
-		var __v0 = use("Runtime.Monad");
-		var __v2 = use("Runtime.rtl");
-		var __v1 = new __v0(ctx, this.getProvider(ctx, __v2.BUS_INTERFACE, "default"));
-		var __v3 = use("Runtime.Core.MessageRPC");
-		__v1 = __v1.monad(ctx, __v3.end.bind(__v3));
-		return __v1.value(ctx);
+		var driver = this.getDriver(ctx, "default:system_bus");
+		await driver.sendMessage(ctx, msg);
 	},
 	/**
-	 * Send rpc message
+	 * Remote call
 	 * @param Dict items
-	 * @return Message
+	 * @return RemoteCallResponse
 	 */
-	sendMessage: function(ctx, items)
+	remoteSystemCall: async function(ctx, items)
 	{
-		var __v0 = use("Runtime.Monad");
-		var __v2 = use("Runtime.rtl");
-		var __v1 = new __v0(ctx, this.getProvider(ctx, __v2.BUS_INTERFACE, "default"));
-		var __v3 = use("Runtime.Core.MessageRPC");
-		var __v4 = use("Runtime.Core.MessageRPC");
-		__v1 = __v1.monad(ctx, __v4.end.bind(__v4));
-		return __v1.value(ctx);
-	},
-	/* ---------------------- Logs ---------------------- */
-	/**
-	 * Log message
-	 * @param string message
-	 * @param int loglevel
-	 */
-	debug: function(ctx, message, loglevel)
-	{
-		if (loglevel == undefined) loglevel = 0;
-		this.logs.push(ctx, message + use("Runtime.rtl").toStr("\n"));
-	},
-	/**
-	 * Timer message
-	 * @param string message
-	 * @param int loglevel
-	 */
-	log_timer: function(ctx, message, loglevel)
-	{
-		if (loglevel == undefined) loglevel = 0;
-		var time = this.utime;
-		time = time - this.start_time;
-		var __v0 = use("Runtime.rtl");
-		var s = "[" + use("Runtime.rtl").toStr(__v0.round(ctx, time * 1000)) + use("Runtime.rtl").toStr("]ms ") + use("Runtime.rtl").toStr(message) + use("Runtime.rtl").toStr("\n");
-		this.logs.push(ctx, s);
-	},
-	/**
-	 * Dump var to log
-	 * @param var v
-	 * @param int loglevel
-	 */
-	dump: function(ctx, v, loglevel)
-	{
-		if (loglevel == undefined) loglevel = 0;
-	},
-	/**
-	 * Append logs message
-	 * @param Collection<string> logs
-	 */
-	logAppend: function(ctx, logs)
-	{
-		/*this.logs.appendVector(logs);*/
-	},
-	/**
-	 * Return logs
-	 */
-	getLogs: function(ctx)
-	{
-		/*return this.logs.toCollection();*/
-		return use("Runtime.Collection").from([]);
-	},
-	/* ---------------------- Other --------------------- */
-	/**
-	 * Returns unix timestamp
-	 */
-	time: function(ctx)
-	{
-	},
-	/**
-	 * Returns unix timestamp
-	 */
-	utime: function(ctx)
-	{
+		var driver = this.getDriver(ctx, "default:system_bus");
+		await driver.remoteCall(ctx, items);
 	},
 	_init: function(ctx)
 	{
 		var defProp = use('Runtime.rtl').defProp;
 		var a = Object.getOwnPropertyNames(this);
-		var __v0 = use("Runtime.Vector");
 		this.base_path = null;
 		this.enviroments = null;
 		this.settings = null;
 		this.modules = null;
 		this.entities = null;
 		this.cli_args = null;
-		this.drivers = null;
-		this.providers = null;
 		this.initialized = false;
 		this.started = false;
 		this.start_time = 0;
-		this.logs = new __v0(ctx);
 		this.entry_point = "";
 		this.main_module = "";
 		this.main_class = "";
-		use("Runtime.CoreStruct").prototype._init.call(this,ctx);
+		this.object_manager = null;
+		use("Runtime.BaseStruct").prototype._init.call(this,ctx);
 	},
 	assignObject: function(ctx,o)
 	{
@@ -368,17 +304,15 @@ Object.assign(Runtime.Core.Context.prototype,
 			this.modules = o.modules;
 			this.entities = o.entities;
 			this.cli_args = o.cli_args;
-			this.drivers = o.drivers;
-			this.providers = o.providers;
 			this.initialized = o.initialized;
 			this.started = o.started;
 			this.start_time = o.start_time;
-			this.logs = o.logs;
 			this.entry_point = o.entry_point;
 			this.main_module = o.main_module;
 			this.main_class = o.main_class;
+			this.object_manager = o.object_manager;
 		}
-		use("Runtime.CoreStruct").prototype.assignObject.call(this,ctx,o);
+		use("Runtime.BaseStruct").prototype.assignObject.call(this,ctx,o);
 	},
 	assignValue: function(ctx,k,v)
 	{
@@ -388,16 +322,14 @@ Object.assign(Runtime.Core.Context.prototype,
 		else if (k == "modules")this.modules = v;
 		else if (k == "entities")this.entities = v;
 		else if (k == "cli_args")this.cli_args = v;
-		else if (k == "drivers")this.drivers = v;
-		else if (k == "providers")this.providers = v;
 		else if (k == "initialized")this.initialized = v;
 		else if (k == "started")this.started = v;
 		else if (k == "start_time")this.start_time = v;
-		else if (k == "logs")this.logs = v;
 		else if (k == "entry_point")this.entry_point = v;
 		else if (k == "main_module")this.main_module = v;
 		else if (k == "main_class")this.main_class = v;
-		else use("Runtime.CoreStruct").prototype.assignValue.call(this,ctx,k,v);
+		else if (k == "object_manager")this.object_manager = v;
+		else use("Runtime.BaseStruct").prototype.assignValue.call(this,ctx,k,v);
 	},
 	takeValue: function(ctx,k,d)
 	{
@@ -408,23 +340,21 @@ Object.assign(Runtime.Core.Context.prototype,
 		else if (k == "modules")return this.modules;
 		else if (k == "entities")return this.entities;
 		else if (k == "cli_args")return this.cli_args;
-		else if (k == "drivers")return this.drivers;
-		else if (k == "providers")return this.providers;
 		else if (k == "initialized")return this.initialized;
 		else if (k == "started")return this.started;
 		else if (k == "start_time")return this.start_time;
-		else if (k == "logs")return this.logs;
 		else if (k == "entry_point")return this.entry_point;
 		else if (k == "main_module")return this.main_module;
 		else if (k == "main_class")return this.main_class;
-		return use("Runtime.CoreStruct").prototype.takeValue.call(this,ctx,k,d);
+		else if (k == "object_manager")return this.object_manager;
+		return use("Runtime.BaseStruct").prototype.takeValue.call(this,ctx,k,d);
 	},
 	getClassName: function(ctx)
 	{
 		return "Runtime.Core.Context";
 	},
 });
-Object.assign(Runtime.Core.Context, use("Runtime.CoreStruct"));
+Object.assign(Runtime.Core.Context, use("Runtime.BaseStruct"));
 Object.assign(Runtime.Core.Context,
 {
 	/**
@@ -463,7 +393,8 @@ Object.assign(Runtime.Core.Context,
 		if (env == undefined) env = null;
 		var settings = use("Runtime.Dict").from({});
 		/* Context data */
-		var obj = use("Runtime.Dict").from({"enviroments":env,"settings":settings,"modules":use("Runtime.Collection").from([])});
+		var __v0 = use("Runtime.Core.ObjectManager");
+		var obj = use("Runtime.Dict").from({"enviroments":env,"settings":settings,"modules":use("Runtime.Collection").from([]),"object_manager":new __v0(ctx)});
 		/* Create context */
 		var ctx = this.newInstance(ctx, obj);
 		return ctx;
@@ -503,55 +434,11 @@ Object.assign(Runtime.Core.Context,
 		return c.copy(ctx, use("Runtime.Dict").from({"entry_point":entry_point}));
 	},
 	/**
-	 * Prepare to run
-	 */
-	prepare: async function(ctx, c)
-	{
-		var main_class = c.main_class;
-		/* Init app */
-		if (main_class != "")
-		{
-			var __v0 = use("Runtime.rtl");
-			var appInit = __v0.method(ctx, main_class, "appInit");
-			c = appInit(ctx, c);
-		}
-		else
-		{
-			c = c.constructor.init(ctx, c);
-		}
-		/* Start app */
-		if (main_class != "")
-		{
-			var __v0 = use("Runtime.rtl");
-			var appStart = __v0.method(ctx, main_class, "appStart");
-			c = await appStart(ctx, c);
-		}
-		else
-		{
-			c = await c.constructor.start(ctx, c);
-		}
-		return Promise.resolve(c);
-	},
-	/**
-	 * Run entry point
-	 */
-	run: async function(ctx, c)
-	{
-		var entry_point = c.entry_point;
-		/* Run entrypoint */
-		if (entry_point != "")
-		{
-			var __v0 = use("Runtime.rtl");
-			var run = __v0.method(ctx, entry_point, "run");
-			await run(c);
-		}
-		return Promise.resolve(c);
-	},
-	/**
 	 * Init context
 	 */
 	init: function(ctx, c)
 	{
+		ctx = c;
 		if (c.initialized)
 		{
 			return c;
@@ -574,29 +461,87 @@ Object.assign(Runtime.Core.Context,
 		entities = c.chain(ctx, "Runtime.Entities", use("Runtime.Collection").from([c,entities]));
 		entities = this.extendEntities(ctx, c, entities);
 		entities = this.getRequiredEntities(ctx, entities);
-		/* Get providers */
-		var providers = this.getProvidersFromEntities(ctx, c, entities);
-		/* Register drivers */
-		var drivers = this.getDriversFromEntities(ctx, c, entities);
-		return c.copy(ctx, use("Runtime.Dict").from({"modules":modules,"entities":entities,"providers":providers,"drivers":drivers,"base_path":base_path,"initialized":true}));
+		return c.copy(ctx, use("Runtime.Dict").from({"modules":modules,"entities":entities,"base_path":base_path,"initialized":true}));
 	},
 	/**
 	 * Start context
 	 */
 	start: async function(ctx, c)
 	{
+		ctx = c;
 		if (c.started)
 		{
 			return Promise.resolve(c);
 		}
-		var drivers = c.drivers.keys(ctx);
-		for (var i = 0;i < drivers.count(ctx);i++)
-		{
-			var driver_name = drivers.item(ctx, i);
-			var driver = c.drivers.item(ctx, driver_name);
-			await driver.startDriver(ctx);
-		}
+		/* Start Object Manager */
+		await c.object_manager.startManager(ctx, c.entities);
 		return Promise.resolve(c.copy(ctx, use("Runtime.Dict").from({"started":true})));
+	},
+	/**
+	 * Init
+	 */
+	appInit: async function(ctx, c)
+	{
+		var main_class = c.main_class;
+		/* Init app */
+		var __v0 = use("Runtime.rtl");
+		if (main_class != "" && __v0.method_exists(ctx, main_class, "appInit"))
+		{
+			var __v1 = use("Runtime.rtl");
+			var init = __v1.method(ctx, main_class, "appInit");
+			c = init(ctx, c);
+		}
+		else
+		{
+			c = c.constructor.init(ctx, c);
+		}
+		return Promise.resolve(c);
+	},
+	/**
+	 * Start
+	 */
+	appStart: async function(ctx, c)
+	{
+		var main_class = c.main_class;
+		/* Start app */
+		var __v0 = use("Runtime.rtl");
+		if (main_class != "" && __v0.method_exists(ctx, main_class, "appStart"))
+		{
+			var __v1 = use("Runtime.rtl");
+			var start = __v1.method(ctx, main_class, "appStart");
+			c = await start(ctx, c);
+		}
+		else
+		{
+			c = await c.constructor.start(ctx, c);
+		}
+		return Promise.resolve(c);
+	},
+	/**
+	 * Run entry point
+	 */
+	appRun: async function(ctx, c)
+	{
+		ctx = c;
+		var entry_point = c.entry_point;
+		/* Run entrypoint */
+		if (entry_point != "")
+		{
+			var __v0 = use("Runtime.rtl");
+			var run = __v0.method(ctx, entry_point, "appRun");
+			await run(c);
+		}
+		return Promise.resolve(c);
+	},
+	/**
+	 * Run application
+	 */
+	run: async function(ctx, c)
+	{
+		c = await this.appInit(ctx, c);
+		c = await this.appStart(ctx, c);
+		c = await this.appRun(ctx, c);
+		return Promise.resolve(c);
 	},
 	/* -------------------- Functions ------------------- */
 	/**
@@ -699,57 +644,6 @@ Object.assign(Runtime.Core.Context,
 		return e.toCollection(ctx);
 	},
 	/**
-	 * Returns providers from entities
-	 */
-	getProvidersFromEntities: function(ctx, c, entities)
-	{
-		var arr = entities.filter(ctx, (ctx, item) => 
-		{
-			var __v0 = use("Runtime.Core.Provider");
-			return item instanceof __v0;
-		});
-		var __v0 = use("Runtime.Map");
-		var providers = new __v0(ctx);
-		for (var i = 0;i < arr.count(ctx);i++)
-		{
-			var item = arr.item(ctx, i);
-			providers.set(ctx, item.name, item);
-		}
-		return providers.toDict(ctx);
-	},
-	/**
-	 * Register drivers
-	 */
-	getDriversFromEntities: function(ctx, c, entities)
-	{
-		var arr = entities.filter(ctx, (ctx, item) => 
-		{
-			var __v0 = use("Runtime.Core.Driver");
-			return item instanceof __v0;
-		});
-		var __v0 = use("Runtime.Map");
-		var drivers = new __v0(ctx);
-		for (var i = 0;i < arr.count(ctx);i++)
-		{
-			var item = arr.item(ctx, i);
-			var driver_name = item.name;
-			var class_name = item.value;
-			if (class_name == "")
-			{
-				class_name = item.name;
-			}
-			var __v1 = use("Runtime.rtl");
-			var driver = __v1.newInstance(ctx, class_name, use("Runtime.Collection").from([]));
-			driver = c.chain(ctx, class_name, use("Runtime.Collection").from([driver]));
-			if (class_name != driver_name)
-			{
-				driver = c.chain(ctx, driver_name, use("Runtime.Collection").from([driver]));
-			}
-			drivers.set(ctx, item.name, driver);
-		}
-		return drivers.toDict(ctx);
-	},
-	/**
 	 * Extends entities
 	 */
 	extendEntities: function(ctx, c, entities)
@@ -767,7 +661,7 @@ Object.assign(Runtime.Core.Context,
 	},
 	getParentClassName: function()
 	{
-		return "Runtime.CoreStruct";
+		return "Runtime.BaseStruct";
 	},
 	getClassInfo: function(ctx)
 	{
@@ -794,15 +688,13 @@ Object.assign(Runtime.Core.Context,
 			a.push("modules");
 			a.push("entities");
 			a.push("cli_args");
-			a.push("drivers");
-			a.push("providers");
 			a.push("initialized");
 			a.push("started");
 			a.push("start_time");
-			a.push("logs");
 			a.push("entry_point");
 			a.push("main_module");
 			a.push("main_class");
+			a.push("object_manager");
 		}
 		return use("Runtime.Collection").from(a);
 	},
@@ -853,20 +745,6 @@ Object.assign(Runtime.Core.Context,
 			"annotations": Collection.from([
 			]),
 		});
-		if (field_name == "drivers") return new IntrospectionInfo(ctx, {
-			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.Core.Context",
-			"name": field_name,
-			"annotations": Collection.from([
-			]),
-		});
-		if (field_name == "providers") return new IntrospectionInfo(ctx, {
-			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.Core.Context",
-			"name": field_name,
-			"annotations": Collection.from([
-			]),
-		});
 		if (field_name == "initialized") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
 			"class_name": "Runtime.Core.Context",
@@ -882,13 +760,6 @@ Object.assign(Runtime.Core.Context,
 			]),
 		});
 		if (field_name == "start_time") return new IntrospectionInfo(ctx, {
-			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.Core.Context",
-			"name": field_name,
-			"annotations": Collection.from([
-			]),
-		});
-		if (field_name == "logs") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
 			"class_name": "Runtime.Core.Context",
 			"name": field_name,
@@ -916,11 +787,21 @@ Object.assign(Runtime.Core.Context,
 			"annotations": Collection.from([
 			]),
 		});
+		if (field_name == "object_manager") return new IntrospectionInfo(ctx, {
+			"kind": IntrospectionInfo.ITEM_FIELD,
+			"class_name": "Runtime.Core.Context",
+			"name": field_name,
+			"annotations": Collection.from([
+			]),
+		});
 		return null;
 	},
 	getMethodsList: function(ctx)
 	{
 		var a = [
+			"pushExternalMessage",
+			"sendSystemMessage",
+			"remoteSystemCall",
 		];
 		return use("Runtime.Collection").from(a);
 	},

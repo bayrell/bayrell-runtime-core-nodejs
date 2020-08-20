@@ -19,96 +19,59 @@ var use = require('bayrell').use;
  */
 if (typeof Runtime == 'undefined') Runtime = {};
 if (typeof Runtime.Core == 'undefined') Runtime.Core = {};
-Runtime.Core.Message = function(ctx, data, object_name, message_id)
+Runtime.Core.RemoteCallEvent = function(ctx)
 {
-	if (object_name == undefined) object_name = "";
-	if (message_id == undefined) message_id = "";
-	use("Runtime.BaseObject").call(this, ctx);
-	/* Set property */
-	this.data = data;
-	this.object_name = object_name;
-	var __v0 = use("Runtime.rtl");
-	this.message_id = (message_id != "") ? (message_id) : (__v0.unique(ctx));
-	var __v1 = use("Runtime.Map");
-	this.tags = new __v1(ctx);
+	use("Runtime.Core.BaseEvent").apply(this, arguments);
 };
-Runtime.Core.Message.prototype = Object.create(use("Runtime.BaseObject").prototype);
-Runtime.Core.Message.prototype.constructor = Runtime.Core.Message;
-Object.assign(Runtime.Core.Message.prototype,
+Runtime.Core.RemoteCallEvent.prototype = Object.create(use("Runtime.Core.BaseEvent").prototype);
+Runtime.Core.RemoteCallEvent.prototype.constructor = Runtime.Core.RemoteCallEvent;
+Object.assign(Runtime.Core.RemoteCallEvent.prototype,
 {
-	/**
-	 * Read property
-	 */
-	getMessageID: function(ctx)
-	{
-		return this.message_id;
-	},
-	getObjectName: function(ctx)
-	{
-		return this.object_name;
-	},
-	isCancel: function(ctx)
-	{
-		return this.is_cancel;
-	},
-	getData: function(ctx)
-	{
-		return this.data;
-	},
-	/**
-	 * Cancel Message
-	 */
-	cancel: function(ctx)
-	{
-		this.is_cancel = true;
-	},
 	_init: function(ctx)
 	{
-		this.message_id = "";
+		var defProp = use('Runtime.rtl').defProp;
+		var a = Object.getOwnPropertyNames(this);
 		this.object_name = "";
-		this.is_cancel = false;
+		this.space_name = "";
+		this.method_name = "";
 		this.data = null;
-		this.tags = null;
-		use("Runtime.BaseObject").prototype._init.call(this,ctx);
+		use("Runtime.Core.BaseEvent").prototype._init.call(this,ctx);
 	},
 	assignObject: function(ctx,o)
 	{
-		if (o instanceof use("Runtime.Core.Message"))
+		if (o instanceof use("Runtime.Core.RemoteCallEvent"))
 		{
-			this.message_id = o.message_id;
 			this.object_name = o.object_name;
-			this.is_cancel = o.is_cancel;
+			this.space_name = o.space_name;
+			this.method_name = o.method_name;
 			this.data = o.data;
-			this.tags = o.tags;
 		}
-		use("Runtime.BaseObject").prototype.assignObject.call(this,ctx,o);
+		use("Runtime.Core.BaseEvent").prototype.assignObject.call(this,ctx,o);
 	},
 	assignValue: function(ctx,k,v)
 	{
-		if (k == "message_id")this.message_id = v;
-		else if (k == "object_name")this.object_name = v;
-		else if (k == "is_cancel")this.is_cancel = v;
+		if (k == "object_name")this.object_name = v;
+		else if (k == "space_name")this.space_name = v;
+		else if (k == "method_name")this.method_name = v;
 		else if (k == "data")this.data = v;
-		else if (k == "tags")this.tags = v;
-		else use("Runtime.BaseObject").prototype.assignValue.call(this,ctx,k,v);
+		else use("Runtime.Core.BaseEvent").prototype.assignValue.call(this,ctx,k,v);
 	},
 	takeValue: function(ctx,k,d)
 	{
 		if (d == undefined) d = null;
-		if (k == "message_id")return this.message_id;
-		else if (k == "object_name")return this.object_name;
-		else if (k == "is_cancel")return this.is_cancel;
+		if (k == "object_name")return this.object_name;
+		else if (k == "space_name")return this.space_name;
+		else if (k == "method_name")return this.method_name;
 		else if (k == "data")return this.data;
-		else if (k == "tags")return this.tags;
-		return use("Runtime.BaseObject").prototype.takeValue.call(this,ctx,k,d);
+		return use("Runtime.Core.BaseEvent").prototype.takeValue.call(this,ctx,k,d);
 	},
 	getClassName: function(ctx)
 	{
-		return "Runtime.Core.Message";
+		return "Runtime.Core.RemoteCallEvent";
 	},
 });
-Object.assign(Runtime.Core.Message, use("Runtime.BaseObject"));
-Object.assign(Runtime.Core.Message,
+Object.assign(Runtime.Core.RemoteCallEvent, use("Runtime.Core.BaseEvent"));
+Object.assign(Runtime.Core.RemoteCallEvent,
 {
 	/* ======================= Class Init Functions ======================= */
 	getCurrentNamespace: function()
@@ -117,11 +80,11 @@ Object.assign(Runtime.Core.Message,
 	},
 	getCurrentClassName: function()
 	{
-		return "Runtime.Core.Message";
+		return "Runtime.Core.RemoteCallEvent";
 	},
 	getParentClassName: function()
 	{
-		return "Runtime.BaseObject";
+		return "Runtime.Core.BaseEvent";
 	},
 	getClassInfo: function(ctx)
 	{
@@ -130,8 +93,8 @@ Object.assign(Runtime.Core.Message,
 		var IntrospectionInfo = use("Runtime.Annotations.IntrospectionInfo");
 		return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_CLASS,
-			"class_name": "Runtime.Core.Message",
-			"name": "Runtime.Core.Message",
+			"class_name": "Runtime.Core.RemoteCallEvent",
+			"name": "Runtime.Core.RemoteCallEvent",
 			"annotations": Collection.from([
 			]),
 		});
@@ -140,13 +103,12 @@ Object.assign(Runtime.Core.Message,
 	{
 		var a = [];
 		if (f==undefined) f=0;
-		if ((f|2)==2)
+		if ((f|3)==3)
 		{
-			a.push("message_id");
 			a.push("object_name");
-			a.push("is_cancel");
+			a.push("space_name");
+			a.push("method_name");
 			a.push("data");
-			a.push("tags");
 		}
 		return use("Runtime.Collection").from(a);
 	},
@@ -155,37 +117,30 @@ Object.assign(Runtime.Core.Message,
 		var Collection = use("Runtime.Collection");
 		var Dict = use("Runtime.Dict");
 		var IntrospectionInfo = use("Runtime.Annotations.IntrospectionInfo");
-		if (field_name == "message_id") return new IntrospectionInfo(ctx, {
-			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.Core.Message",
-			"name": field_name,
-			"annotations": Collection.from([
-			]),
-		});
 		if (field_name == "object_name") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.Core.Message",
+			"class_name": "Runtime.Core.RemoteCallEvent",
 			"name": field_name,
 			"annotations": Collection.from([
 			]),
 		});
-		if (field_name == "is_cancel") return new IntrospectionInfo(ctx, {
+		if (field_name == "space_name") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.Core.Message",
+			"class_name": "Runtime.Core.RemoteCallEvent",
+			"name": field_name,
+			"annotations": Collection.from([
+			]),
+		});
+		if (field_name == "method_name") return new IntrospectionInfo(ctx, {
+			"kind": IntrospectionInfo.ITEM_FIELD,
+			"class_name": "Runtime.Core.RemoteCallEvent",
 			"name": field_name,
 			"annotations": Collection.from([
 			]),
 		});
 		if (field_name == "data") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.Core.Message",
-			"name": field_name,
-			"annotations": Collection.from([
-			]),
-		});
-		if (field_name == "tags") return new IntrospectionInfo(ctx, {
-			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.Core.Message",
+			"class_name": "Runtime.Core.RemoteCallEvent",
 			"name": field_name,
 			"annotations": Collection.from([
 			]),
@@ -202,5 +157,5 @@ Object.assign(Runtime.Core.Message,
 	{
 		return null;
 	},
-});use.add(Runtime.Core.Message);
-module.exports = Runtime.Core.Message;
+});use.add(Runtime.Core.RemoteCallEvent);
+module.exports = Runtime.Core.RemoteCallEvent;

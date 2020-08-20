@@ -19,96 +19,84 @@ var use = require('bayrell').use;
  */
 if (typeof Runtime == 'undefined') Runtime = {};
 if (typeof Runtime.Core == 'undefined') Runtime.Core = {};
-Runtime.Core.Message = function(ctx, data, object_name, message_id)
+Runtime.Core.CoreObject = function(ctx, object_name)
 {
 	if (object_name == undefined) object_name = "";
-	if (message_id == undefined) message_id = "";
-	use("Runtime.BaseObject").call(this, ctx);
-	/* Set property */
-	this.data = data;
-	this.object_name = object_name;
+	/* Init object */
+	this._init(ctx);
+	/* Set object name */
 	var __v0 = use("Runtime.rtl");
-	this.message_id = (message_id != "") ? (message_id) : (__v0.unique(ctx));
-	var __v1 = use("Runtime.Map");
-	this.tags = new __v1(ctx);
+	this.uq_object_name = (object_name != "") ? (object_name) : (this.getClassName(ctx) + use("Runtime.rtl").toStr(".") + use("Runtime.rtl").toStr(__v0.unique(ctx)));
+	var __v1 = use("Runtime.Vector");
+	this.childs = new __v1(ctx);
 };
-Runtime.Core.Message.prototype = Object.create(use("Runtime.BaseObject").prototype);
-Runtime.Core.Message.prototype.constructor = Runtime.Core.Message;
-Object.assign(Runtime.Core.Message.prototype,
+Runtime.Core.CoreObject.prototype = Object.create(use("Runtime.BaseObject").prototype);
+Runtime.Core.CoreObject.prototype.constructor = Runtime.Core.CoreObject;
+Object.assign(Runtime.Core.CoreObject.prototype,
 {
 	/**
-	 * Read property
+	 * Returns object name
 	 */
-	getMessageID: function(ctx)
-	{
-		return this.message_id;
-	},
 	getObjectName: function(ctx)
 	{
-		return this.object_name;
-	},
-	isCancel: function(ctx)
-	{
-		return this.is_cancel;
-	},
-	getData: function(ctx)
-	{
-		return this.data;
+		return this.uq_object_name;
 	},
 	/**
-	 * Cancel Message
+	 * Handle message
 	 */
-	cancel: function(ctx)
+	handleMessage: async function(ctx, msg)
 	{
-		this.is_cancel = true;
+	},
+	/**
+	 * Set parent
+	 */
+	setParent: function(ctx, child_obj, parent_obj)
+	{
+		this.manager.setParent(ctx, child_obj, parent_obj);
 	},
 	_init: function(ctx)
 	{
-		this.message_id = "";
-		this.object_name = "";
-		this.is_cancel = false;
-		this.data = null;
-		this.tags = null;
+		this.uq_object_name = "";
+		this.parent = null;
+		this.childs = null;
+		this.manager = null;
 		use("Runtime.BaseObject").prototype._init.call(this,ctx);
 	},
 	assignObject: function(ctx,o)
 	{
-		if (o instanceof use("Runtime.Core.Message"))
+		if (o instanceof use("Runtime.Core.CoreObject"))
 		{
-			this.message_id = o.message_id;
-			this.object_name = o.object_name;
-			this.is_cancel = o.is_cancel;
-			this.data = o.data;
-			this.tags = o.tags;
+			this.uq_object_name = o.uq_object_name;
+			this.parent = o.parent;
+			this.childs = o.childs;
+			this.manager = o.manager;
 		}
 		use("Runtime.BaseObject").prototype.assignObject.call(this,ctx,o);
 	},
 	assignValue: function(ctx,k,v)
 	{
-		if (k == "message_id")this.message_id = v;
-		else if (k == "object_name")this.object_name = v;
-		else if (k == "is_cancel")this.is_cancel = v;
-		else if (k == "data")this.data = v;
-		else if (k == "tags")this.tags = v;
+		if (k == "uq_object_name")this.uq_object_name = v;
+		else if (k == "parent")this.parent = v;
+		else if (k == "childs")this.childs = v;
+		else if (k == "manager")this.manager = v;
 		else use("Runtime.BaseObject").prototype.assignValue.call(this,ctx,k,v);
 	},
 	takeValue: function(ctx,k,d)
 	{
 		if (d == undefined) d = null;
-		if (k == "message_id")return this.message_id;
-		else if (k == "object_name")return this.object_name;
-		else if (k == "is_cancel")return this.is_cancel;
-		else if (k == "data")return this.data;
-		else if (k == "tags")return this.tags;
+		if (k == "uq_object_name")return this.uq_object_name;
+		else if (k == "parent")return this.parent;
+		else if (k == "childs")return this.childs;
+		else if (k == "manager")return this.manager;
 		return use("Runtime.BaseObject").prototype.takeValue.call(this,ctx,k,d);
 	},
 	getClassName: function(ctx)
 	{
-		return "Runtime.Core.Message";
+		return "Runtime.Core.CoreObject";
 	},
 });
-Object.assign(Runtime.Core.Message, use("Runtime.BaseObject"));
-Object.assign(Runtime.Core.Message,
+Object.assign(Runtime.Core.CoreObject, use("Runtime.BaseObject"));
+Object.assign(Runtime.Core.CoreObject,
 {
 	/* ======================= Class Init Functions ======================= */
 	getCurrentNamespace: function()
@@ -117,7 +105,7 @@ Object.assign(Runtime.Core.Message,
 	},
 	getCurrentClassName: function()
 	{
-		return "Runtime.Core.Message";
+		return "Runtime.Core.CoreObject";
 	},
 	getParentClassName: function()
 	{
@@ -130,8 +118,8 @@ Object.assign(Runtime.Core.Message,
 		var IntrospectionInfo = use("Runtime.Annotations.IntrospectionInfo");
 		return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_CLASS,
-			"class_name": "Runtime.Core.Message",
-			"name": "Runtime.Core.Message",
+			"class_name": "Runtime.Core.CoreObject",
+			"name": "Runtime.Core.CoreObject",
 			"annotations": Collection.from([
 			]),
 		});
@@ -142,11 +130,10 @@ Object.assign(Runtime.Core.Message,
 		if (f==undefined) f=0;
 		if ((f|2)==2)
 		{
-			a.push("message_id");
-			a.push("object_name");
-			a.push("is_cancel");
-			a.push("data");
-			a.push("tags");
+			a.push("uq_object_name");
+			a.push("parent");
+			a.push("childs");
+			a.push("manager");
 		}
 		return use("Runtime.Collection").from(a);
 	},
@@ -155,37 +142,30 @@ Object.assign(Runtime.Core.Message,
 		var Collection = use("Runtime.Collection");
 		var Dict = use("Runtime.Dict");
 		var IntrospectionInfo = use("Runtime.Annotations.IntrospectionInfo");
-		if (field_name == "message_id") return new IntrospectionInfo(ctx, {
+		if (field_name == "uq_object_name") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.Core.Message",
+			"class_name": "Runtime.Core.CoreObject",
 			"name": field_name,
 			"annotations": Collection.from([
 			]),
 		});
-		if (field_name == "object_name") return new IntrospectionInfo(ctx, {
+		if (field_name == "parent") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.Core.Message",
+			"class_name": "Runtime.Core.CoreObject",
 			"name": field_name,
 			"annotations": Collection.from([
 			]),
 		});
-		if (field_name == "is_cancel") return new IntrospectionInfo(ctx, {
+		if (field_name == "childs") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.Core.Message",
+			"class_name": "Runtime.Core.CoreObject",
 			"name": field_name,
 			"annotations": Collection.from([
 			]),
 		});
-		if (field_name == "data") return new IntrospectionInfo(ctx, {
+		if (field_name == "manager") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.Core.Message",
-			"name": field_name,
-			"annotations": Collection.from([
-			]),
-		});
-		if (field_name == "tags") return new IntrospectionInfo(ctx, {
-			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.Core.Message",
+			"class_name": "Runtime.Core.CoreObject",
 			"name": field_name,
 			"annotations": Collection.from([
 			]),
@@ -202,5 +182,5 @@ Object.assign(Runtime.Core.Message,
 	{
 		return null;
 	},
-});use.add(Runtime.Core.Message);
-module.exports = Runtime.Core.Message;
+});use.add(Runtime.Core.CoreObject);
+module.exports = Runtime.Core.CoreObject;

@@ -17,7 +17,7 @@
  */
 
 var exports = {
-	VERSION: '0.10.0',
+	VERSION: '0.10.1',
 	MODULE_NAME: 'Runtime.Core',
 }
 
@@ -35,17 +35,15 @@ function add(name)
 }
 
 add("Runtime.Core.Context");
+add("Runtime.Core.CoreObject");
 add("Runtime.Core.CoreDriver");
 add("Runtime.Core.CoreEvent");
-add("Runtime.Core.CoreProvider");
 add("Runtime.Core.Entity");
 add("Runtime.Core.Driver");
 add("Runtime.Core.LambdaChain");
 add("Runtime.Core.LambdaChainDeclare");
 add("Runtime.Core.Message");
-add("Runtime.Core.MessageRPC");
-add("Runtime.Core.MessageSession");
+add("Runtime.Core.ObjectManager");
 add("Runtime.Core.ModuleDescription");
-add("Runtime.Core.Provider");
 
 module.exports = exports;

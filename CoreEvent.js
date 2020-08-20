@@ -19,47 +19,37 @@ var use = require('bayrell').use;
  */
 if (typeof Runtime == 'undefined') Runtime = {};
 if (typeof Runtime.Core == 'undefined') Runtime.Core = {};
-Runtime.Core.CoreEvent = function(ctx)
+Runtime.Core.BaseEvent = function(ctx)
 {
-	use("Runtime.CoreStruct").apply(this, arguments);
+	use("Runtime.BaseStruct").apply(this, arguments);
 };
-Runtime.Core.CoreEvent.prototype = Object.create(use("Runtime.CoreStruct").prototype);
-Runtime.Core.CoreEvent.prototype.constructor = Runtime.Core.CoreEvent;
-Object.assign(Runtime.Core.CoreEvent.prototype,
+Runtime.Core.BaseEvent.prototype = Object.create(use("Runtime.BaseStruct").prototype);
+Runtime.Core.BaseEvent.prototype.constructor = Runtime.Core.BaseEvent;
+Object.assign(Runtime.Core.BaseEvent.prototype,
 {
-	_init: function(ctx)
-	{
-		var defProp = use('Runtime.rtl').defProp;
-		var a = Object.getOwnPropertyNames(this);
-		this.sender = null;
-		use("Runtime.CoreStruct").prototype._init.call(this,ctx);
-	},
 	assignObject: function(ctx,o)
 	{
-		if (o instanceof use("Runtime.Core.CoreEvent"))
+		if (o instanceof use("Runtime.Core.BaseEvent"))
 		{
-			this.sender = o.sender;
 		}
-		use("Runtime.CoreStruct").prototype.assignObject.call(this,ctx,o);
+		use("Runtime.BaseStruct").prototype.assignObject.call(this,ctx,o);
 	},
 	assignValue: function(ctx,k,v)
 	{
-		if (k == "sender")this.sender = v;
-		else use("Runtime.CoreStruct").prototype.assignValue.call(this,ctx,k,v);
+		use("Runtime.BaseStruct").prototype.assignValue.call(this,ctx,k,v);
 	},
 	takeValue: function(ctx,k,d)
 	{
 		if (d == undefined) d = null;
-		if (k == "sender")return this.sender;
-		return use("Runtime.CoreStruct").prototype.takeValue.call(this,ctx,k,d);
+		return use("Runtime.BaseStruct").prototype.takeValue.call(this,ctx,k,d);
 	},
 	getClassName: function(ctx)
 	{
-		return "Runtime.Core.CoreEvent";
+		return "Runtime.Core.BaseEvent";
 	},
 });
-Object.assign(Runtime.Core.CoreEvent, use("Runtime.CoreStruct"));
-Object.assign(Runtime.Core.CoreEvent,
+Object.assign(Runtime.Core.BaseEvent, use("Runtime.BaseStruct"));
+Object.assign(Runtime.Core.BaseEvent,
 {
 	/* ======================= Class Init Functions ======================= */
 	getCurrentNamespace: function()
@@ -68,11 +58,11 @@ Object.assign(Runtime.Core.CoreEvent,
 	},
 	getCurrentClassName: function()
 	{
-		return "Runtime.Core.CoreEvent";
+		return "Runtime.Core.BaseEvent";
 	},
 	getParentClassName: function()
 	{
-		return "Runtime.CoreStruct";
+		return "Runtime.BaseStruct";
 	},
 	getClassInfo: function(ctx)
 	{
@@ -81,8 +71,8 @@ Object.assign(Runtime.Core.CoreEvent,
 		var IntrospectionInfo = use("Runtime.Annotations.IntrospectionInfo");
 		return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_CLASS,
-			"class_name": "Runtime.Core.CoreEvent",
-			"name": "Runtime.Core.CoreEvent",
+			"class_name": "Runtime.Core.BaseEvent",
+			"name": "Runtime.Core.BaseEvent",
 			"annotations": Collection.from([
 			]),
 		});
@@ -91,10 +81,6 @@ Object.assign(Runtime.Core.CoreEvent,
 	{
 		var a = [];
 		if (f==undefined) f=0;
-		if ((f|3)==3)
-		{
-			a.push("sender");
-		}
 		return use("Runtime.Collection").from(a);
 	},
 	getFieldInfoByName: function(ctx,field_name)
@@ -102,13 +88,6 @@ Object.assign(Runtime.Core.CoreEvent,
 		var Collection = use("Runtime.Collection");
 		var Dict = use("Runtime.Dict");
 		var IntrospectionInfo = use("Runtime.Annotations.IntrospectionInfo");
-		if (field_name == "sender") return new IntrospectionInfo(ctx, {
-			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.Core.CoreEvent",
-			"name": field_name,
-			"annotations": Collection.from([
-			]),
-		});
 		return null;
 	},
 	getMethodsList: function(ctx)
@@ -121,5 +100,5 @@ Object.assign(Runtime.Core.CoreEvent,
 	{
 		return null;
 	},
-});use.add(Runtime.Core.CoreEvent);
-module.exports = Runtime.Core.CoreEvent;
+});use.add(Runtime.Core.BaseEvent);
+module.exports = Runtime.Core.BaseEvent;
