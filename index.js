@@ -17,7 +17,7 @@
  */
 
 var exports = {
-	VERSION: '0.10.1',
+	VERSION: '0.10.2',
 	MODULE_NAME: 'Runtime.Core',
 }
 

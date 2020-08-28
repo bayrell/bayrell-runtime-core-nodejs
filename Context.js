@@ -79,6 +79,22 @@ Object.assign(Runtime.Core.Context.prototype,
 		return this;
 	},
 	/**
+	 * Register listener
+	 */
+	registerListener: function(ctx, from, event_class_name, object_name, method_name)
+	{
+		if (method_name == undefined) method_name = "";
+		return this.object_manager.registerListener(ctx, from, event_class_name, object_name, method_name);
+	},
+	/**
+	 * Find listeners
+	 */
+	findListeners: function(ctx, from, event_class_name)
+	{
+		if (event_class_name == undefined) event_class_name = "";
+		return this.object_manager.findListeners(ctx, from, event_class_name);
+	},
+	/**
 	 * Get object
 	 */
 	getObject: function(ctx, object_name)
@@ -159,8 +175,7 @@ Object.assign(Runtime.Core.Context.prototype,
 			var item_chain_name = item.chain;
 			if (item_chain_name != "")
 			{
-				var res = this.chain(ctx, item_chain_name, args);
-				args = args.setIm(ctx, args.count(ctx) - 1, res);
+				args = this.chain(ctx, item_chain_name, args);
 			}
 			else
 			{
@@ -171,12 +186,10 @@ Object.assign(Runtime.Core.Context.prototype,
 				var __v1 = use("Runtime.rtl");
 				var f = __v1.method(ctx, class_name, method_name);
 				var __v2 = use("Runtime.rtl");
-				var res = __v2.apply(ctx, f, args);
-				args = args.setIm(ctx, args.count(ctx) - 1, res);
+				args = __v2.apply(ctx, f, args);
 			}
 		}
-		var res = args.last(ctx);
-		return res;
+		return args;
 	},
 	/**
 	 * Apply Lambda Chain Await
@@ -198,8 +211,7 @@ Object.assign(Runtime.Core.Context.prototype,
 			var item_chain_name = item.chain;
 			if (item_chain_name != "")
 			{
-				var res = await this.chainAwait(ctx, item_chain_name, args);
-				args = args.setIm(ctx, args.count(ctx) - 1, res);
+				args = await this.chainAwait(ctx, item_chain_name, args);
 			}
 			else
 			{
@@ -212,19 +224,16 @@ Object.assign(Runtime.Core.Context.prototype,
 				if (item.is_async)
 				{
 					var __v2 = use("Runtime.rtl");
-					var res = await __v2.apply(ctx, f, args);
-					args = args.setIm(ctx, args.count(ctx) - 1, res);
+					args = await __v2.apply(ctx, f, args);
 				}
 				else
 				{
 					var __v3 = use("Runtime.rtl");
-					var res = __v3.apply(ctx, f, args);
-					args = args.setIm(ctx, args.count(ctx) - 1, res);
+					args = __v3.apply(ctx, f, args);
 				}
 			}
 		}
-		var res = args.last(ctx);
-		return Promise.resolve(res);
+		return Promise.resolve(args);
 	},
 	/**
 	 * Translate message
@@ -422,6 +431,8 @@ Object.assign(Runtime.Core.Context,
 		/* Set main module */
 		c = Runtime.rtl.setAttr(ctx, c, Runtime.Collection.from(["main_module"]), main_module);
 		c = Runtime.rtl.setAttr(ctx, c, Runtime.Collection.from(["main_class"]), main_module_class_name);
+		/* Set entry point */
+		c = Runtime.rtl.setAttr(ctx, c, Runtime.Collection.from(["entry_point"]), main_module_class_name);
 		/* Set new settings */
 		c = Runtime.rtl.setAttr(ctx, c, Runtime.Collection.from(["settings"]), settings);
 		return c;
@@ -458,7 +469,10 @@ Object.assign(Runtime.Core.Context,
 		}
 		c = Runtime.rtl.setAttr(ctx, c, Runtime.Collection.from(["entities"]), entities);
 		/* Extend entities */
-		entities = c.chain(ctx, "Runtime.Entities", use("Runtime.Collection").from([c,entities]));
+		var __v1 = use("Runtime.Monad");
+		var __v2 = new __v1(ctx, c.chain(ctx, "Runtime.Entities", use("Runtime.Collection").from([c,entities])));
+		__v2 = __v2.attr(ctx, 1);
+		entities = __v2.value(ctx);
 		entities = this.extendEntities(ctx, c, entities);
 		entities = this.getRequiredEntities(ctx, entities);
 		return c.copy(ctx, use("Runtime.Dict").from({"modules":modules,"entities":entities,"base_path":base_path,"initialized":true}));

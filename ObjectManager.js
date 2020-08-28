@@ -40,6 +40,8 @@ Runtime.Core.ObjectManager = function(ctx)
 	this.drivers.set(ctx, this.getClassName(ctx), this);
 	this.objects.set(ctx, "default:object_manager", this);
 	this.drivers.set(ctx, "default:object_manager", this);
+	var __v6 = use("Runtime.Vector");
+	this.listeners = new __v6(ctx);
 	this.manager = this;
 };
 Runtime.Core.ObjectManager.prototype = Object.create(use("Runtime.Core.CoreObject").prototype);
@@ -52,20 +54,17 @@ Object.assign(Runtime.Core.ObjectManager.prototype,
 	addObject: function(ctx, obj, object_name)
 	{
 		if (object_name == undefined) object_name = "";
-		if (this.mutex_objects)
+		var __v0 = use("Runtime.Core.CoreObject");
+		if (obj instanceof __v0)
 		{
-			var __v0 = use("Runtime.Core.CoreObject");
-			if (obj instanceof __v0)
+			if (object_name == "")
 			{
-				if (object_name == "")
-				{
-					object_name = obj.getObjectName(ctx);
-				}
-				if (!this.drivers.has(ctx, object_name))
-				{
-					this.objects.set(ctx, object_name, obj);
-					obj.manager = obj;
-				}
+				object_name = obj.getObjectName(ctx);
+			}
+			if (!this.drivers.has(ctx, object_name))
+			{
+				this.objects.set(ctx, object_name, obj);
+				obj.manager = this;
 			}
 		}
 	},
@@ -75,10 +74,7 @@ Object.assign(Runtime.Core.ObjectManager.prototype,
 	getObject: function(ctx, object_name)
 	{
 		var obj = null;
-		if (this.mutex_objects)
-		{
-			obj = this.objects.get(ctx, object_name, null);
-		}
+		obj = this.objects.get(ctx, object_name, null);
 		return obj;
 	},
 	/**
@@ -87,10 +83,7 @@ Object.assign(Runtime.Core.ObjectManager.prototype,
 	getDriver: function(ctx, driver_name)
 	{
 		var obj = null;
-		if (this.mutex_objects)
-		{
-			obj = this.drivers.get(ctx, driver_name, null);
-		}
+		obj = this.drivers.get(ctx, driver_name, null);
 		return obj;
 	},
 	/**
@@ -98,23 +91,92 @@ Object.assign(Runtime.Core.ObjectManager.prototype,
 	 */
 	removeObject: function(ctx, object_name)
 	{
-		if (this.mutex_objects)
+		if (!this.drivers.has(ctx, object_name))
 		{
-			if (!this.drivers.has(ctx, object_name))
+			var obj = this.objects.get(ctx, object_name, null);
+			if (obj != null && obj.parent != null)
 			{
-				this.objects.remove(ctx, object_name);
+				obj.parent.childs.remove(ctx, obj);
+				obj.parent = null;
+			}
+			this.objects.remove(ctx, object_name);
+		}
+	},
+	/**
+	 * Remove object
+	 */
+	removeObjectRecursive: function(ctx, object_name)
+	{
+		var keys = null;
+		keys = this.objects.keys(ctx);
+		var __v0 = use("Runtime.lib");
+		keys = keys.filter(ctx, (ctx, item_name) => 
+		{
+			var __v0 = use("Runtime.rs");
+			return __v0.strpos(ctx, item_name, object_name) == 0;
+		}).sortIm(ctx, __v0.sortDesc);
+		for (var i = 0;i < keys.count(ctx);i++)
+		{
+			var name = Runtime.rtl.get(ctx, keys, i);
+			this.removeObject(ctx, name);
+		}
+		/* Remove listeners */
+		for (var i = this.listeners.count(ctx) - 1;i >= 0;i--)
+		{
+			var item = Runtime.rtl.get(ctx, this.listeners, i);
+			var __v1 = use("Runtime.rs");
+			var __v2 = use("Runtime.rs");
+			if (__v1.strpos(ctx, Runtime.rtl.get(ctx, item, "from"), object_name) == 0 || __v2.strpos(ctx, Runtime.rtl.get(ctx, item, "object_name"), object_name) == 0)
+			{
+				this.listeners.remove(ctx, i);
 			}
 		}
+	},
+	/**
+	 * Register listener
+	 */
+	registerListener: function(ctx, from, event_class_name, object_name, method_name)
+	{
+		if (method_name == undefined) method_name = "";
+		for (var i = 0;i < this.listeners.count(ctx);i++)
+		{
+			var item = Runtime.rtl.get(ctx, this.listeners, i);
+			if (Runtime.rtl.get(ctx, item, "from") == from && Runtime.rtl.get(ctx, item, "object_name") == object_name && Runtime.rtl.get(ctx, item, "method_name") == method_name && Runtime.rtl.get(ctx, item, "event_class_name") == event_class_name)
+			{
+				return ;
+			}
+		}
+		this.listeners.push(ctx, use("Runtime.Dict").from({"from":from,"object_name":object_name,"event_class_name":event_class_name,"method_name":method_name}));
+	},
+	/**
+	 * Find callback
+	 */
+	findListeners: function(ctx, from, event_class_name)
+	{
+		if (event_class_name == undefined) event_class_name = "";
+		var __v0 = use("Runtime.Vector");
+		var items = new __v0(ctx);
+		for (var i = 0;i < this.listeners.count(ctx);i++)
+		{
+			var item = Runtime.rtl.get(ctx, this.listeners, i);
+			if (Runtime.rtl.get(ctx, item, "from") == from && (event_class_name == "" || Runtime.rtl.get(ctx, item, "event_class_name") == event_class_name))
+			{
+				items.push(ctx, item);
+			}
+		}
+		return items.toCollection(ctx);
 	},
 	/**
 	 * Start object manager
 	 */
 	startManager: async function(ctx, entities)
 	{
+		var __v0 = use("Runtime.Vector");
+		var drivers_created = new __v0(ctx);
 		var drivers = entities.filter(ctx, (ctx, item) => 
 		{
-			var __v0 = use("Runtime.Core.Driver");
-			return item instanceof __v0;
+			var __v1 = use("Runtime.Core.Driver");
+			return item instanceof __v1;
 		});
 		for (var i = 0;i < drivers.count(ctx);i++)
 		{
@@ -125,23 +187,36 @@ Object.assign(Runtime.Core.ObjectManager.prototype,
 			{
 				class_name = driver_entity.name;
 			}
-			var __v0 = use("Runtime.rtl");
-			var driver = __v0.newInstance(ctx, class_name, use("Runtime.Collection").from([]));
-			driver = ctx.chain(ctx, class_name, use("Runtime.Collection").from([driver]));
+			var __v1 = use("Runtime.rtl");
+			var driver = __v1.newInstance(ctx, class_name, use("Runtime.Collection").from([driver_name,driver_entity]));
+			var __v2 = use("Runtime.Monad");
+			var __v3 = new __v2(ctx, ctx.chain(ctx, class_name, use("Runtime.Collection").from([driver])));
+			__v3 = __v3.attr(ctx, 0);
+			driver = __v3.value(ctx);
 			if (class_name != driver_name)
 			{
-				driver = ctx.chain(ctx, driver_name, use("Runtime.Collection").from([driver]));
+				var __v4 = use("Runtime.Monad");
+				var __v5 = new __v4(ctx, ctx.chain(ctx, driver_name, use("Runtime.Collection").from([driver])));
+				__v5 = __v5.attr(ctx, 0);
+				driver = __v5.value(ctx);
 			}
-			if (this.mutex_objects)
+			if (driver == null)
 			{
-				this.objects.set(ctx, driver_name, driver);
-				this.drivers.set(ctx, driver_name, driver);
-				driver.manager = this;
+				var __v4 = use("Runtime.Exceptions.RuntimeException");
+				throw new __v4(ctx, "Driver not found " + use("Runtime.rtl").toStr(class_name))
 			}
+			this.objects.set(ctx, driver_name, driver);
+			this.drivers.set(ctx, driver_name, driver);
+			driver.manager = this;
+			drivers_created.push(ctx, driver);
+		}
+		/* Start drivers */
+		for (var i = 0;i < drivers_created.count(ctx);i++)
+		{
+			var driver = drivers_created.item(ctx, i);
 			await driver.startDriver(ctx);
 		}
-		var __v0 = use("Runtime.rtl");
-		__v0.runThread(ctx, this.processMessages.bind(this));
+		/*rtl::runThread( method this.processMessages );*/
 	},
 	/**
 	 * Send message
@@ -150,11 +225,10 @@ Object.assign(Runtime.Core.ObjectManager.prototype,
 	 */
 	sendMessage: async function(ctx, msg)
 	{
-		if (this.mutex_messages)
-		{
-			this.messages.push(ctx, msg);
-		}
-		this.mutex_process.unlock(ctx);
+		this.messages.push(ctx, msg);
+		this.mutex_process.unLock(ctx);
+		/* Handle messages */
+		await this.handleMessages(ctx);
 	},
 	/**
 	 * Send message
@@ -196,22 +270,53 @@ Object.assign(Runtime.Core.ObjectManager.prototype,
 	 */
 	handleMessages: async function(ctx)
 	{
-		while (this.message.count(ctx) > 0)
+		while (this.messages.count(ctx) > 0)
 		{
 			var msg = null;
-			if (this.mutex_messages)
-			{
-				msg = this.message.pop(ctx);
-			}
+			msg = this.messages.pop(ctx);
 			if (msg == null)
 			{
 				return Promise.resolve();
 			}
-			var obj = this.getObject(ctx, msg.object_name);
-			while (obj != null)
+			await this.handleMessage(ctx, msg);
+		}
+	},
+	/**
+	 * Handle messages
+	 */
+	handleMessage: async function(ctx, msg)
+	{
+		if (msg.data == null)
+		{
+			return Promise.resolve();
+		}
+		var __v0 = use("Runtime.Map");
+		var hash = new __v0(ctx);
+		var items = this.findListeners(ctx, msg.from, msg.data.getClassName(ctx));
+		for (var i = 0;i < items.count(ctx);i++)
+		{
+			var item = Runtime.rtl.get(ctx, items, i);
+			var object_name = Runtime.rtl.get(ctx, item, "object_name");
+			var method_name = Runtime.rtl.get(ctx, item, "method_name");
+			var obj = this.getObject(ctx, object_name);
+			if (obj != null)
 			{
-				await obj.handleMessage(ctx, msg);
-				obj = obj.parent;
+				var __v1 = use("Runtime.rtl");
+				if (__v1.method_exists(ctx, obj, method_name))
+				{
+					var __v2 = use("Runtime.rtl");
+					var f = __v2.method(ctx, obj, method_name);
+					await f(ctx, msg);
+				}
+			}
+			if (!hash.has(ctx, object_name))
+			{
+				while (obj != null)
+				{
+					await obj.handleMessage(ctx, msg);
+					obj = obj.parent;
+				}
+				hash.set(ctx, object_name, true);
 			}
 		}
 	},
@@ -220,19 +325,16 @@ Object.assign(Runtime.Core.ObjectManager.prototype,
 	 */
 	setParent: function(ctx, child_obj, parent_obj)
 	{
-		if (this.mutex_objects)
+		if (child_obj.parent != null)
 		{
-			if (child_obj.parent != null)
+			child_obj.parent.childs.remove(ctx, child_obj);
+		}
+		child_obj.parent = parent_obj;
+		if (parent_obj != null)
+		{
+			if (parent_obj.childs.indexOf(ctx, child_obj) == -1)
 			{
-				child_obj.parent.childs.remove(ctx, child_obj);
-			}
-			child_obj.parent = parent;
-			if (parent_obj != null)
-			{
-				if (parent_obj.childs.indexOf(ctx, child_obj) == -1)
-				{
-					parent_obj.childs.push(ctx, child_obj);
-				}
+				parent_obj.childs.push(ctx, child_obj);
 			}
 		}
 	},
@@ -244,6 +346,7 @@ Object.assign(Runtime.Core.ObjectManager.prototype,
 		this.mutex_messages = null;
 		this.mutex_objects = null;
 		this.mutex_process = null;
+		this.listeners = null;
 		use("Runtime.Core.CoreObject").prototype._init.call(this,ctx);
 	},
 	assignObject: function(ctx,o)
@@ -256,6 +359,7 @@ Object.assign(Runtime.Core.ObjectManager.prototype,
 			this.mutex_messages = o.mutex_messages;
 			this.mutex_objects = o.mutex_objects;
 			this.mutex_process = o.mutex_process;
+			this.listeners = o.listeners;
 		}
 		use("Runtime.Core.CoreObject").prototype.assignObject.call(this,ctx,o);
 	},
@@ -267,6 +371,7 @@ Object.assign(Runtime.Core.ObjectManager.prototype,
 		else if (k == "mutex_messages")this.mutex_messages = v;
 		else if (k == "mutex_objects")this.mutex_objects = v;
 		else if (k == "mutex_process")this.mutex_process = v;
+		else if (k == "listeners")this.listeners = v;
 		else use("Runtime.Core.CoreObject").prototype.assignValue.call(this,ctx,k,v);
 	},
 	takeValue: function(ctx,k,d)
@@ -278,6 +383,7 @@ Object.assign(Runtime.Core.ObjectManager.prototype,
 		else if (k == "mutex_messages")return this.mutex_messages;
 		else if (k == "mutex_objects")return this.mutex_objects;
 		else if (k == "mutex_process")return this.mutex_process;
+		else if (k == "listeners")return this.listeners;
 		return use("Runtime.Core.CoreObject").prototype.takeValue.call(this,ctx,k,d);
 	},
 	getClassName: function(ctx)
@@ -326,6 +432,7 @@ Object.assign(Runtime.Core.ObjectManager,
 			a.push("mutex_messages");
 			a.push("mutex_objects");
 			a.push("mutex_process");
+			a.push("listeners");
 		}
 		return use("Runtime.Collection").from(a);
 	},
@@ -370,6 +477,13 @@ Object.assign(Runtime.Core.ObjectManager,
 			]),
 		});
 		if (field_name == "mutex_process") return new IntrospectionInfo(ctx, {
+			"kind": IntrospectionInfo.ITEM_FIELD,
+			"class_name": "Runtime.Core.ObjectManager",
+			"name": field_name,
+			"annotations": Collection.from([
+			]),
+		});
+		if (field_name == "listeners") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
 			"class_name": "Runtime.Core.ObjectManager",
 			"name": field_name,

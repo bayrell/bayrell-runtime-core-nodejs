@@ -19,17 +19,24 @@ var use = require('bayrell').use;
  */
 if (typeof Runtime == 'undefined') Runtime = {};
 if (typeof Runtime.Core == 'undefined') Runtime.Core = {};
-Runtime.Core.BaseEvent = function(ctx)
+Runtime.Core.CoreEvent = function(ctx)
 {
 	use("Runtime.BaseStruct").apply(this, arguments);
 };
-Runtime.Core.BaseEvent.prototype = Object.create(use("Runtime.BaseStruct").prototype);
-Runtime.Core.BaseEvent.prototype.constructor = Runtime.Core.BaseEvent;
-Object.assign(Runtime.Core.BaseEvent.prototype,
+Runtime.Core.CoreEvent.prototype = Object.create(use("Runtime.BaseStruct").prototype);
+Runtime.Core.CoreEvent.prototype.constructor = Runtime.Core.CoreEvent;
+Object.assign(Runtime.Core.CoreEvent.prototype,
 {
+	/**
+	 * Check if event is cancel
+	 */
+	isCancel: function(ctx)
+	{
+		return false;
+	},
 	assignObject: function(ctx,o)
 	{
-		if (o instanceof use("Runtime.Core.BaseEvent"))
+		if (o instanceof use("Runtime.Core.CoreEvent"))
 		{
 		}
 		use("Runtime.BaseStruct").prototype.assignObject.call(this,ctx,o);
@@ -45,12 +52,19 @@ Object.assign(Runtime.Core.BaseEvent.prototype,
 	},
 	getClassName: function(ctx)
 	{
-		return "Runtime.Core.BaseEvent";
+		return "Runtime.Core.CoreEvent";
 	},
 });
-Object.assign(Runtime.Core.BaseEvent, use("Runtime.BaseStruct"));
-Object.assign(Runtime.Core.BaseEvent,
+Object.assign(Runtime.Core.CoreEvent, use("Runtime.BaseStruct"));
+Object.assign(Runtime.Core.CoreEvent,
 {
+	/**
+	 * Cancel event
+	 */
+	cancel: function(ctx, event)
+	{
+		return event;
+	},
 	/* ======================= Class Init Functions ======================= */
 	getCurrentNamespace: function()
 	{
@@ -58,7 +72,7 @@ Object.assign(Runtime.Core.BaseEvent,
 	},
 	getCurrentClassName: function()
 	{
-		return "Runtime.Core.BaseEvent";
+		return "Runtime.Core.CoreEvent";
 	},
 	getParentClassName: function()
 	{
@@ -71,8 +85,8 @@ Object.assign(Runtime.Core.BaseEvent,
 		var IntrospectionInfo = use("Runtime.Annotations.IntrospectionInfo");
 		return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_CLASS,
-			"class_name": "Runtime.Core.BaseEvent",
-			"name": "Runtime.Core.BaseEvent",
+			"class_name": "Runtime.Core.CoreEvent",
+			"name": "Runtime.Core.CoreEvent",
 			"annotations": Collection.from([
 			]),
 		});
@@ -100,5 +114,5 @@ Object.assign(Runtime.Core.BaseEvent,
 	{
 		return null;
 	},
-});use.add(Runtime.Core.BaseEvent);
-module.exports = Runtime.Core.BaseEvent;
+});use.add(Runtime.Core.CoreEvent);
+module.exports = Runtime.Core.CoreEvent;

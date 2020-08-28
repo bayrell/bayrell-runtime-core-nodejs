@@ -19,16 +19,18 @@ var use = require('bayrell').use;
  */
 if (typeof Runtime == 'undefined') Runtime = {};
 if (typeof Runtime.Core == 'undefined') Runtime.Core = {};
-Runtime.Core.CoreObject = function(ctx, object_name)
+Runtime.Core.CoreObject = function(ctx, object_name, entity)
 {
 	if (object_name == undefined) object_name = "";
+	if (entity == undefined) entity = null;
 	/* Init object */
 	this._init(ctx);
 	/* Set object name */
 	var __v0 = use("Runtime.rtl");
-	this.uq_object_name = (object_name != "") ? (object_name) : (this.getClassName(ctx) + use("Runtime.rtl").toStr(".") + use("Runtime.rtl").toStr(__v0.unique(ctx)));
+	this.object_name = (object_name != "") ? (object_name) : (this.getClassName(ctx) + use("Runtime.rtl").toStr(".") + use("Runtime.rtl").toStr(__v0.unique(ctx)));
 	var __v1 = use("Runtime.Vector");
 	this.childs = new __v1(ctx);
+	this.entity = entity;
 };
 Runtime.Core.CoreObject.prototype = Object.create(use("Runtime.BaseObject").prototype);
 Runtime.Core.CoreObject.prototype.constructor = Runtime.Core.CoreObject;
@@ -39,7 +41,14 @@ Object.assign(Runtime.Core.CoreObject.prototype,
 	 */
 	getObjectName: function(ctx)
 	{
-		return this.uq_object_name;
+		return this.object_name;
+	},
+	/**
+	 * Returns entity
+	 */
+	getEntity: function(ctx)
+	{
+		return this.entity;
 	},
 	/**
 	 * Handle message
@@ -50,44 +59,48 @@ Object.assign(Runtime.Core.CoreObject.prototype,
 	/**
 	 * Set parent
 	 */
-	setParent: function(ctx, child_obj, parent_obj)
+	setParent: function(ctx, parent_obj)
 	{
-		this.manager.setParent(ctx, child_obj, parent_obj);
+		this.manager.setParent(ctx, this, parent_obj);
 	},
 	_init: function(ctx)
 	{
-		this.uq_object_name = "";
+		this.object_name = "";
 		this.parent = null;
 		this.childs = null;
 		this.manager = null;
+		this.entity = null;
 		use("Runtime.BaseObject").prototype._init.call(this,ctx);
 	},
 	assignObject: function(ctx,o)
 	{
 		if (o instanceof use("Runtime.Core.CoreObject"))
 		{
-			this.uq_object_name = o.uq_object_name;
+			this.object_name = o.object_name;
 			this.parent = o.parent;
 			this.childs = o.childs;
 			this.manager = o.manager;
+			this.entity = o.entity;
 		}
 		use("Runtime.BaseObject").prototype.assignObject.call(this,ctx,o);
 	},
 	assignValue: function(ctx,k,v)
 	{
-		if (k == "uq_object_name")this.uq_object_name = v;
+		if (k == "object_name")this.object_name = v;
 		else if (k == "parent")this.parent = v;
 		else if (k == "childs")this.childs = v;
 		else if (k == "manager")this.manager = v;
+		else if (k == "entity")this.entity = v;
 		else use("Runtime.BaseObject").prototype.assignValue.call(this,ctx,k,v);
 	},
 	takeValue: function(ctx,k,d)
 	{
 		if (d == undefined) d = null;
-		if (k == "uq_object_name")return this.uq_object_name;
+		if (k == "object_name")return this.object_name;
 		else if (k == "parent")return this.parent;
 		else if (k == "childs")return this.childs;
 		else if (k == "manager")return this.manager;
+		else if (k == "entity")return this.entity;
 		return use("Runtime.BaseObject").prototype.takeValue.call(this,ctx,k,d);
 	},
 	getClassName: function(ctx)
@@ -130,10 +143,11 @@ Object.assign(Runtime.Core.CoreObject,
 		if (f==undefined) f=0;
 		if ((f|2)==2)
 		{
-			a.push("uq_object_name");
+			a.push("object_name");
 			a.push("parent");
 			a.push("childs");
 			a.push("manager");
+			a.push("entity");
 		}
 		return use("Runtime.Collection").from(a);
 	},
@@ -142,7 +156,7 @@ Object.assign(Runtime.Core.CoreObject,
 		var Collection = use("Runtime.Collection");
 		var Dict = use("Runtime.Dict");
 		var IntrospectionInfo = use("Runtime.Annotations.IntrospectionInfo");
-		if (field_name == "uq_object_name") return new IntrospectionInfo(ctx, {
+		if (field_name == "object_name") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
 			"class_name": "Runtime.Core.CoreObject",
 			"name": field_name,
@@ -164,6 +178,13 @@ Object.assign(Runtime.Core.CoreObject,
 			]),
 		});
 		if (field_name == "manager") return new IntrospectionInfo(ctx, {
+			"kind": IntrospectionInfo.ITEM_FIELD,
+			"class_name": "Runtime.Core.CoreObject",
+			"name": field_name,
+			"annotations": Collection.from([
+			]),
+		});
+		if (field_name == "entity") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
 			"class_name": "Runtime.Core.CoreObject",
 			"name": field_name,

@@ -19,14 +19,14 @@ var use = require('bayrell').use;
  */
 if (typeof Runtime == 'undefined') Runtime = {};
 if (typeof Runtime.Core == 'undefined') Runtime.Core = {};
-Runtime.Core.Message = function(ctx, data, object_name, message_id)
+Runtime.Core.Message = function(ctx, data, from, message_id)
 {
-	if (object_name == undefined) object_name = "";
+	if (from == undefined) from = "";
 	if (message_id == undefined) message_id = "";
 	use("Runtime.BaseObject").call(this, ctx);
 	/* Set property */
 	this.data = data;
-	this.object_name = object_name;
+	this.from = from;
 	var __v0 = use("Runtime.rtl");
 	this.message_id = (message_id != "") ? (message_id) : (__v0.unique(ctx));
 	var __v1 = use("Runtime.Map");
@@ -43,9 +43,9 @@ Object.assign(Runtime.Core.Message.prototype,
 	{
 		return this.message_id;
 	},
-	getObjectName: function(ctx)
+	getFrom: function(ctx)
 	{
-		return this.object_name;
+		return this.from;
 	},
 	isCancel: function(ctx)
 	{
@@ -61,22 +61,28 @@ Object.assign(Runtime.Core.Message.prototype,
 	cancel: function(ctx)
 	{
 		this.is_cancel = true;
+		var __v0 = use("Runtime.Core.CoreEvent");
+		if (this.data instanceof __v0)
+		{
+			this.data = this.data.constructor.cancel(ctx, this.data);
+		}
 	},
 	_init: function(ctx)
 	{
+		var __v0 = use("Runtime.Map");
+		this.from = "";
 		this.message_id = "";
-		this.object_name = "";
 		this.is_cancel = false;
 		this.data = null;
-		this.tags = null;
+		this.tags = new __v0(ctx);
 		use("Runtime.BaseObject").prototype._init.call(this,ctx);
 	},
 	assignObject: function(ctx,o)
 	{
 		if (o instanceof use("Runtime.Core.Message"))
 		{
+			this.from = o.from;
 			this.message_id = o.message_id;
-			this.object_name = o.object_name;
 			this.is_cancel = o.is_cancel;
 			this.data = o.data;
 			this.tags = o.tags;
@@ -85,8 +91,8 @@ Object.assign(Runtime.Core.Message.prototype,
 	},
 	assignValue: function(ctx,k,v)
 	{
-		if (k == "message_id")this.message_id = v;
-		else if (k == "object_name")this.object_name = v;
+		if (k == "from")this.from = v;
+		else if (k == "message_id")this.message_id = v;
 		else if (k == "is_cancel")this.is_cancel = v;
 		else if (k == "data")this.data = v;
 		else if (k == "tags")this.tags = v;
@@ -95,8 +101,8 @@ Object.assign(Runtime.Core.Message.prototype,
 	takeValue: function(ctx,k,d)
 	{
 		if (d == undefined) d = null;
-		if (k == "message_id")return this.message_id;
-		else if (k == "object_name")return this.object_name;
+		if (k == "from")return this.from;
+		else if (k == "message_id")return this.message_id;
 		else if (k == "is_cancel")return this.is_cancel;
 		else if (k == "data")return this.data;
 		else if (k == "tags")return this.tags;
@@ -142,8 +148,8 @@ Object.assign(Runtime.Core.Message,
 		if (f==undefined) f=0;
 		if ((f|2)==2)
 		{
+			a.push("from");
 			a.push("message_id");
-			a.push("object_name");
 			a.push("is_cancel");
 			a.push("data");
 			a.push("tags");
@@ -155,14 +161,14 @@ Object.assign(Runtime.Core.Message,
 		var Collection = use("Runtime.Collection");
 		var Dict = use("Runtime.Dict");
 		var IntrospectionInfo = use("Runtime.Annotations.IntrospectionInfo");
-		if (field_name == "message_id") return new IntrospectionInfo(ctx, {
+		if (field_name == "from") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
 			"class_name": "Runtime.Core.Message",
 			"name": field_name,
 			"annotations": Collection.from([
 			]),
 		});
-		if (field_name == "object_name") return new IntrospectionInfo(ctx, {
+		if (field_name == "message_id") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
 			"class_name": "Runtime.Core.Message",
 			"name": field_name,

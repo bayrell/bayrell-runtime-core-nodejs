@@ -27,6 +27,7 @@ Runtime.Core.Entity.prototype = Object.create(use("Runtime.BaseStruct").prototyp
 Runtime.Core.Entity.prototype.constructor = Runtime.Core.Entity;
 Object.assign(Runtime.Core.Entity.prototype,
 {
+	/* Functions */
 	className: function(ctx)
 	{
 		return (this.value != "") ? (this.value) : (this.name);
@@ -41,6 +42,7 @@ Object.assign(Runtime.Core.Entity.prototype,
 		var a = Object.getOwnPropertyNames(this);
 		this.name = "";
 		this.value = "";
+		this.params = use("Runtime.Dict").from({});
 		use("Runtime.BaseStruct").prototype._init.call(this,ctx);
 	},
 	assignObject: function(ctx,o)
@@ -49,6 +51,7 @@ Object.assign(Runtime.Core.Entity.prototype,
 		{
 			this.name = o.name;
 			this.value = o.value;
+			this.params = o.params;
 		}
 		use("Runtime.BaseStruct").prototype.assignObject.call(this,ctx,o);
 	},
@@ -56,6 +59,7 @@ Object.assign(Runtime.Core.Entity.prototype,
 	{
 		if (k == "name")this.name = v;
 		else if (k == "value")this.value = v;
+		else if (k == "params")this.params = v;
 		else use("Runtime.BaseStruct").prototype.assignValue.call(this,ctx,k,v);
 	},
 	takeValue: function(ctx,k,d)
@@ -63,6 +67,7 @@ Object.assign(Runtime.Core.Entity.prototype,
 		if (d == undefined) d = null;
 		if (k == "name")return this.name;
 		else if (k == "value")return this.value;
+		else if (k == "params")return this.params;
 		return use("Runtime.BaseStruct").prototype.takeValue.call(this,ctx,k,d);
 	},
 	getClassName: function(ctx)
@@ -107,6 +112,7 @@ Object.assign(Runtime.Core.Entity,
 		{
 			a.push("name");
 			a.push("value");
+			a.push("params");
 		}
 		return use("Runtime.Collection").from(a);
 	},
@@ -123,6 +129,13 @@ Object.assign(Runtime.Core.Entity,
 			]),
 		});
 		if (field_name == "value") return new IntrospectionInfo(ctx, {
+			"kind": IntrospectionInfo.ITEM_FIELD,
+			"class_name": "Runtime.Core.Entity",
+			"name": field_name,
+			"annotations": Collection.from([
+			]),
+		});
+		if (field_name == "params") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
 			"class_name": "Runtime.Core.Entity",
 			"name": field_name,
