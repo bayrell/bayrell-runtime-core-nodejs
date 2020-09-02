@@ -102,11 +102,25 @@ Object.assign(Runtime.Core.Context.prototype,
 		return this.object_manager.getObject(ctx, object_name);
 	},
 	/**
+	 * Get objects
+	 */
+	getObjects: function(ctx, object_name)
+	{
+		return this.object_manager.getObjects(ctx, object_name);
+	},
+	/**
 	 * Get driver
 	 */
 	getDriver: function(ctx, driver_name)
 	{
 		return this.object_manager.getDriver(ctx, driver_name);
+	},
+	/**
+	 * Get drivers
+	 */
+	getDrivers: function(ctx, class_name)
+	{
+		return this.object_manager.getDrivers(ctx, class_name);
 	},
 	/**
 	 * Remove object
@@ -163,7 +177,7 @@ Object.assign(Runtime.Core.Context.prototype,
 		var entities = this.entities.filter(ctx, (ctx, item) => 
 		{
 			var __v0 = use("Runtime.Core.LambdaChain");
-			return item instanceof __v0 && item.name == chain_name && item.is_await == false;
+			return item instanceof __v0 && item.name == chain_name && item.is_async == false;
 		});
 		entities = entities.sortIm(ctx, (ctx, a, b) => 
 		{
@@ -194,7 +208,7 @@ Object.assign(Runtime.Core.Context.prototype,
 	/**
 	 * Apply Lambda Chain Await
 	 */
-	chainAwait: async function(ctx, chain_name, args)
+	chainAsync: async function(ctx, chain_name, args)
 	{
 		var entities = this.entities.filter(ctx, (ctx, item) => 
 		{
@@ -211,7 +225,7 @@ Object.assign(Runtime.Core.Context.prototype,
 			var item_chain_name = item.chain;
 			if (item_chain_name != "")
 			{
-				args = await this.chainAwait(ctx, item_chain_name, args);
+				args = await this.chainAsync(ctx, item_chain_name, args);
 			}
 			else
 			{
@@ -550,10 +564,20 @@ Object.assign(Runtime.Core.Context,
 	/**
 	 * Run application
 	 */
-	run: async function(ctx, c)
+	run: async function(ctx, c, f1, f2)
 	{
+		if (f1 == undefined) f1 = null;
+		if (f2 == undefined) f2 = null;
 		c = await this.appInit(ctx, c);
+		if (f1 != null)
+		{
+			c = await f1(ctx, c);
+		}
 		c = await this.appStart(ctx, c);
+		if (f2 != null)
+		{
+			c = await f2(ctx, c);
+		}
 		c = await this.appRun(ctx, c);
 		return Promise.resolve(c);
 	},
@@ -681,7 +705,7 @@ Object.assign(Runtime.Core.Context,
 	{
 		var Collection = use("Runtime.Collection");
 		var Dict = use("Runtime.Dict");
-		var IntrospectionInfo = use("Runtime.Annotations.IntrospectionInfo");
+		var IntrospectionInfo = use("Runtime.IntrospectionInfo");
 		return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_CLASS,
 			"class_name": "Runtime.Core.Context",
@@ -716,7 +740,7 @@ Object.assign(Runtime.Core.Context,
 	{
 		var Collection = use("Runtime.Collection");
 		var Dict = use("Runtime.Dict");
-		var IntrospectionInfo = use("Runtime.Annotations.IntrospectionInfo");
+		var IntrospectionInfo = use("Runtime.IntrospectionInfo");
 		if (field_name == "base_path") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
 			"class_name": "Runtime.Core.Context",

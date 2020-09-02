@@ -39,7 +39,7 @@ Object.assign(Runtime.Core.LambdaChain.prototype,
 		this.value = "";
 		this.chain = "";
 		this.pos = 0;
-		this.is_await = false;
+		this.is_async = false;
 		use("Runtime.BaseStruct").prototype._init.call(this,ctx);
 	},
 	assignObject: function(ctx,o)
@@ -50,7 +50,7 @@ Object.assign(Runtime.Core.LambdaChain.prototype,
 			this.value = o.value;
 			this.chain = o.chain;
 			this.pos = o.pos;
-			this.is_await = o.is_await;
+			this.is_async = o.is_async;
 		}
 		use("Runtime.BaseStruct").prototype.assignObject.call(this,ctx,o);
 	},
@@ -60,7 +60,7 @@ Object.assign(Runtime.Core.LambdaChain.prototype,
 		else if (k == "value")this.value = v;
 		else if (k == "chain")this.chain = v;
 		else if (k == "pos")this.pos = v;
-		else if (k == "is_await")this.is_await = v;
+		else if (k == "is_async")this.is_async = v;
 		else use("Runtime.BaseStruct").prototype.assignValue.call(this,ctx,k,v);
 	},
 	takeValue: function(ctx,k,d)
@@ -70,7 +70,7 @@ Object.assign(Runtime.Core.LambdaChain.prototype,
 		else if (k == "value")return this.value;
 		else if (k == "chain")return this.chain;
 		else if (k == "pos")return this.pos;
-		else if (k == "is_await")return this.is_await;
+		else if (k == "is_async")return this.is_async;
 		return use("Runtime.BaseStruct").prototype.takeValue.call(this,ctx,k,d);
 	},
 	getClassName: function(ctx)
@@ -98,7 +98,7 @@ Object.assign(Runtime.Core.LambdaChain,
 	{
 		var Collection = use("Runtime.Collection");
 		var Dict = use("Runtime.Dict");
-		var IntrospectionInfo = use("Runtime.Annotations.IntrospectionInfo");
+		var IntrospectionInfo = use("Runtime.IntrospectionInfo");
 		return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_CLASS,
 			"class_name": "Runtime.Core.LambdaChain",
@@ -117,7 +117,7 @@ Object.assign(Runtime.Core.LambdaChain,
 			a.push("value");
 			a.push("chain");
 			a.push("pos");
-			a.push("is_await");
+			a.push("is_async");
 		}
 		return use("Runtime.Collection").from(a);
 	},
@@ -125,7 +125,7 @@ Object.assign(Runtime.Core.LambdaChain,
 	{
 		var Collection = use("Runtime.Collection");
 		var Dict = use("Runtime.Dict");
-		var IntrospectionInfo = use("Runtime.Annotations.IntrospectionInfo");
+		var IntrospectionInfo = use("Runtime.IntrospectionInfo");
 		if (field_name == "name") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
 			"class_name": "Runtime.Core.LambdaChain",
@@ -154,7 +154,7 @@ Object.assign(Runtime.Core.LambdaChain,
 			"annotations": Collection.from([
 			]),
 		});
-		if (field_name == "is_await") return new IntrospectionInfo(ctx, {
+		if (field_name == "is_async") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
 			"class_name": "Runtime.Core.LambdaChain",
 			"name": field_name,

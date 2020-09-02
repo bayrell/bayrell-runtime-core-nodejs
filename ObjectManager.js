@@ -78,6 +78,23 @@ Object.assign(Runtime.Core.ObjectManager.prototype,
 		return obj;
 	},
 	/**
+	 * Get objects
+	 */
+	getObjects: function(ctx, class_name)
+	{
+		var __v0 = use("Runtime.Vector");
+		var objects = new __v0(ctx);
+		this.objects.each(ctx, (ctx, obj) => 
+		{
+			var __v1 = use("Runtime.rtl");
+			if (__v1.is_instanceof(ctx, obj, class_name))
+			{
+				objects.push(ctx, obj);
+			}
+		});
+		return objects.toCollection(ctx);
+	},
+	/**
 	 * Get driver
 	 */
 	getDriver: function(ctx, driver_name)
@@ -85,6 +102,23 @@ Object.assign(Runtime.Core.ObjectManager.prototype,
 		var obj = null;
 		obj = this.drivers.get(ctx, driver_name, null);
 		return obj;
+	},
+	/**
+	 * Get drivers
+	 */
+	getDrivers: function(ctx, class_name)
+	{
+		var __v0 = use("Runtime.Vector");
+		var drivers = new __v0(ctx);
+		this.drivers.each(ctx, (ctx, obj) => 
+		{
+			var __v1 = use("Runtime.rtl");
+			if (__v1.is_instanceof(ctx, obj, class_name))
+			{
+				drivers.push(ctx, obj);
+			}
+		});
+		return drivers.toCollection(ctx);
 	},
 	/**
 	 * Remove object
@@ -411,7 +445,7 @@ Object.assign(Runtime.Core.ObjectManager,
 	{
 		var Collection = use("Runtime.Collection");
 		var Dict = use("Runtime.Dict");
-		var IntrospectionInfo = use("Runtime.Annotations.IntrospectionInfo");
+		var IntrospectionInfo = use("Runtime.IntrospectionInfo");
 		return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_CLASS,
 			"class_name": "Runtime.Core.ObjectManager",
@@ -440,7 +474,7 @@ Object.assign(Runtime.Core.ObjectManager,
 	{
 		var Collection = use("Runtime.Collection");
 		var Dict = use("Runtime.Dict");
-		var IntrospectionInfo = use("Runtime.Annotations.IntrospectionInfo");
+		var IntrospectionInfo = use("Runtime.IntrospectionInfo");
 		if (field_name == "objects") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
 			"class_name": "Runtime.Core.ObjectManager",
