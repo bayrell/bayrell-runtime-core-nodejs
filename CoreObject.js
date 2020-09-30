@@ -61,7 +61,7 @@ Object.assign(Runtime.Core.CoreObject.prototype,
 	 */
 	setParent: function(ctx, parent_obj)
 	{
-		this.manager.setParent(ctx, this, parent_obj);
+		this.manager.changeParent(ctx, this, parent_obj);
 	},
 	_init: function(ctx)
 	{

@@ -70,6 +70,7 @@ Object.assign(Runtime.Core.Message.prototype,
 	_init: function(ctx)
 	{
 		var __v0 = use("Runtime.Map");
+		this.sender = null;
 		this.from = "";
 		this.message_id = "";
 		this.is_cancel = false;
@@ -81,6 +82,7 @@ Object.assign(Runtime.Core.Message.prototype,
 	{
 		if (o instanceof use("Runtime.Core.Message"))
 		{
+			this.sender = o.sender;
 			this.from = o.from;
 			this.message_id = o.message_id;
 			this.is_cancel = o.is_cancel;
@@ -91,7 +93,8 @@ Object.assign(Runtime.Core.Message.prototype,
 	},
 	assignValue: function(ctx,k,v)
 	{
-		if (k == "from")this.from = v;
+		if (k == "sender")this.sender = v;
+		else if (k == "from")this.from = v;
 		else if (k == "message_id")this.message_id = v;
 		else if (k == "is_cancel")this.is_cancel = v;
 		else if (k == "data")this.data = v;
@@ -101,7 +104,8 @@ Object.assign(Runtime.Core.Message.prototype,
 	takeValue: function(ctx,k,d)
 	{
 		if (d == undefined) d = null;
-		if (k == "from")return this.from;
+		if (k == "sender")return this.sender;
+		else if (k == "from")return this.from;
 		else if (k == "message_id")return this.message_id;
 		else if (k == "is_cancel")return this.is_cancel;
 		else if (k == "data")return this.data;
@@ -148,6 +152,7 @@ Object.assign(Runtime.Core.Message,
 		if (f==undefined) f=0;
 		if ((f|2)==2)
 		{
+			a.push("sender");
 			a.push("from");
 			a.push("message_id");
 			a.push("is_cancel");
@@ -161,6 +166,13 @@ Object.assign(Runtime.Core.Message,
 		var Collection = use("Runtime.Collection");
 		var Dict = use("Runtime.Dict");
 		var IntrospectionInfo = use("Runtime.IntrospectionInfo");
+		if (field_name == "sender") return new IntrospectionInfo(ctx, {
+			"kind": IntrospectionInfo.ITEM_FIELD,
+			"class_name": "Runtime.Core.Message",
+			"name": field_name,
+			"annotations": Collection.from([
+			]),
+		});
 		if (field_name == "from") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
 			"class_name": "Runtime.Core.Message",

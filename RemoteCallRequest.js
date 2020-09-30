@@ -19,67 +19,67 @@ var use = require('bayrell').use;
  */
 if (typeof Runtime == 'undefined') Runtime = {};
 if (typeof Runtime.Core == 'undefined') Runtime.Core = {};
-Runtime.Core.LambdaChain = function(ctx)
+Runtime.Core.RemoteCallRequest = function(ctx)
 {
 	use("Runtime.BaseStruct").apply(this, arguments);
 };
-Runtime.Core.LambdaChain.prototype = Object.create(use("Runtime.BaseStruct").prototype);
-Runtime.Core.LambdaChain.prototype.constructor = Runtime.Core.LambdaChain;
-Object.assign(Runtime.Core.LambdaChain.prototype,
+Runtime.Core.RemoteCallRequest.prototype = Object.create(use("Runtime.BaseStruct").prototype);
+Runtime.Core.RemoteCallRequest.prototype.constructor = Runtime.Core.RemoteCallRequest;
+Object.assign(Runtime.Core.RemoteCallRequest.prototype,
 {
-	logName: function(ctx)
-	{
-		return this.getClassName(ctx) + use("Runtime.rtl").toStr(" -> ") + use("Runtime.rtl").toStr(this.name) + use("Runtime.rtl").toStr(" -> [") + use("Runtime.rtl").toStr(this.pos) + use("Runtime.rtl").toStr("] ") + use("Runtime.rtl").toStr(this.value);
-	},
 	_init: function(ctx)
 	{
 		var defProp = use('Runtime.rtl').defProp;
 		var a = Object.getOwnPropertyNames(this);
-		this.name = "";
-		this.value = "";
-		this.chain = "";
-		this.pos = 0;
-		this.is_async = false;
+		this.app_name = "self";
+		this.object_name = "";
+		this.interface_name = "default";
+		this.method_name = "";
+		this.data = null;
+		this.storage = null;
 		use("Runtime.BaseStruct").prototype._init.call(this,ctx);
 	},
 	assignObject: function(ctx,o)
 	{
-		if (o instanceof use("Runtime.Core.LambdaChain"))
+		if (o instanceof use("Runtime.Core.RemoteCallRequest"))
 		{
-			this.name = o.name;
-			this.value = o.value;
-			this.chain = o.chain;
-			this.pos = o.pos;
-			this.is_async = o.is_async;
+			this.app_name = o.app_name;
+			this.object_name = o.object_name;
+			this.interface_name = o.interface_name;
+			this.method_name = o.method_name;
+			this.data = o.data;
+			this.storage = o.storage;
 		}
 		use("Runtime.BaseStruct").prototype.assignObject.call(this,ctx,o);
 	},
 	assignValue: function(ctx,k,v)
 	{
-		if (k == "name")this.name = v;
-		else if (k == "value")this.value = v;
-		else if (k == "chain")this.chain = v;
-		else if (k == "pos")this.pos = v;
-		else if (k == "is_async")this.is_async = v;
+		if (k == "app_name")this.app_name = v;
+		else if (k == "object_name")this.object_name = v;
+		else if (k == "interface_name")this.interface_name = v;
+		else if (k == "method_name")this.method_name = v;
+		else if (k == "data")this.data = v;
+		else if (k == "storage")this.storage = v;
 		else use("Runtime.BaseStruct").prototype.assignValue.call(this,ctx,k,v);
 	},
 	takeValue: function(ctx,k,d)
 	{
 		if (d == undefined) d = null;
-		if (k == "name")return this.name;
-		else if (k == "value")return this.value;
-		else if (k == "chain")return this.chain;
-		else if (k == "pos")return this.pos;
-		else if (k == "is_async")return this.is_async;
+		if (k == "app_name")return this.app_name;
+		else if (k == "object_name")return this.object_name;
+		else if (k == "interface_name")return this.interface_name;
+		else if (k == "method_name")return this.method_name;
+		else if (k == "data")return this.data;
+		else if (k == "storage")return this.storage;
 		return use("Runtime.BaseStruct").prototype.takeValue.call(this,ctx,k,d);
 	},
 	getClassName: function(ctx)
 	{
-		return "Runtime.Core.LambdaChain";
+		return "Runtime.Core.RemoteCallRequest";
 	},
 });
-Object.assign(Runtime.Core.LambdaChain, use("Runtime.BaseStruct"));
-Object.assign(Runtime.Core.LambdaChain,
+Object.assign(Runtime.Core.RemoteCallRequest, use("Runtime.BaseStruct"));
+Object.assign(Runtime.Core.RemoteCallRequest,
 {
 	/* ======================= Class Init Functions ======================= */
 	getCurrentNamespace: function()
@@ -88,7 +88,7 @@ Object.assign(Runtime.Core.LambdaChain,
 	},
 	getCurrentClassName: function()
 	{
-		return "Runtime.Core.LambdaChain";
+		return "Runtime.Core.RemoteCallRequest";
 	},
 	getParentClassName: function()
 	{
@@ -101,8 +101,8 @@ Object.assign(Runtime.Core.LambdaChain,
 		var IntrospectionInfo = use("Runtime.IntrospectionInfo");
 		return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_CLASS,
-			"class_name": "Runtime.Core.LambdaChain",
-			"name": "Runtime.Core.LambdaChain",
+			"class_name": "Runtime.Core.RemoteCallRequest",
+			"name": "Runtime.Core.RemoteCallRequest",
 			"annotations": Collection.from([
 			]),
 		});
@@ -113,11 +113,12 @@ Object.assign(Runtime.Core.LambdaChain,
 		if (f==undefined) f=0;
 		if ((f|3)==3)
 		{
-			a.push("name");
-			a.push("value");
-			a.push("chain");
-			a.push("pos");
-			a.push("is_async");
+			a.push("app_name");
+			a.push("object_name");
+			a.push("interface_name");
+			a.push("method_name");
+			a.push("data");
+			a.push("storage");
 		}
 		return use("Runtime.Collection").from(a);
 	},
@@ -126,37 +127,44 @@ Object.assign(Runtime.Core.LambdaChain,
 		var Collection = use("Runtime.Collection");
 		var Dict = use("Runtime.Dict");
 		var IntrospectionInfo = use("Runtime.IntrospectionInfo");
-		if (field_name == "name") return new IntrospectionInfo(ctx, {
+		if (field_name == "app_name") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.Core.LambdaChain",
+			"class_name": "Runtime.Core.RemoteCallRequest",
 			"name": field_name,
 			"annotations": Collection.from([
 			]),
 		});
-		if (field_name == "value") return new IntrospectionInfo(ctx, {
+		if (field_name == "object_name") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.Core.LambdaChain",
+			"class_name": "Runtime.Core.RemoteCallRequest",
 			"name": field_name,
 			"annotations": Collection.from([
 			]),
 		});
-		if (field_name == "chain") return new IntrospectionInfo(ctx, {
+		if (field_name == "interface_name") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.Core.LambdaChain",
+			"class_name": "Runtime.Core.RemoteCallRequest",
 			"name": field_name,
 			"annotations": Collection.from([
 			]),
 		});
-		if (field_name == "pos") return new IntrospectionInfo(ctx, {
+		if (field_name == "method_name") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.Core.LambdaChain",
+			"class_name": "Runtime.Core.RemoteCallRequest",
 			"name": field_name,
 			"annotations": Collection.from([
 			]),
 		});
-		if (field_name == "is_async") return new IntrospectionInfo(ctx, {
+		if (field_name == "data") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.Core.LambdaChain",
+			"class_name": "Runtime.Core.RemoteCallRequest",
+			"name": field_name,
+			"annotations": Collection.from([
+			]),
+		});
+		if (field_name == "storage") return new IntrospectionInfo(ctx, {
+			"kind": IntrospectionInfo.ITEM_FIELD,
+			"class_name": "Runtime.Core.RemoteCallRequest",
 			"name": field_name,
 			"annotations": Collection.from([
 			]),
@@ -173,5 +181,5 @@ Object.assign(Runtime.Core.LambdaChain,
 	{
 		return null;
 	},
-});use.add(Runtime.Core.LambdaChain);
-module.exports = Runtime.Core.LambdaChain;
+});use.add(Runtime.Core.RemoteCallRequest);
+module.exports = Runtime.Core.RemoteCallRequest;

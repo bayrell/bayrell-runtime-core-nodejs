@@ -19,55 +19,50 @@ var use = require('bayrell').use;
  */
 if (typeof Runtime == 'undefined') Runtime = {};
 if (typeof Runtime.Core == 'undefined') Runtime.Core = {};
-Runtime.Core.LambdaChainDeclare = function(ctx)
+Runtime.Core.ApiException = function(ctx, message, code, response, prev)
 {
-	use("Runtime.BaseStruct").apply(this, arguments);
+	if (message == undefined) message = "";
+	if (code == undefined) code = -1;
+	if (response == undefined) response = null;
+	if (prev == undefined) prev = null;
+	use("Runtime.Exceptions.RuntimeException").call(this, ctx, message, code, prev);
+	this.response = response;
 };
-Runtime.Core.LambdaChainDeclare.prototype = Object.create(use("Runtime.BaseStruct").prototype);
-Runtime.Core.LambdaChainDeclare.prototype.constructor = Runtime.Core.LambdaChainDeclare;
-Object.assign(Runtime.Core.LambdaChainDeclare.prototype,
+Runtime.Core.ApiException.prototype = Object.create(use("Runtime.Exceptions.RuntimeException").prototype);
+Runtime.Core.ApiException.prototype.constructor = Runtime.Core.ApiException;
+Object.assign(Runtime.Core.ApiException.prototype,
 {
-	logName: function(ctx)
-	{
-		return this.getClassName(ctx) + use("Runtime.rtl").toStr(" -> ") + use("Runtime.rtl").toStr(this.name);
-	},
 	_init: function(ctx)
 	{
-		var defProp = use('Runtime.rtl').defProp;
-		var a = Object.getOwnPropertyNames(this);
-		this.name = "";
-		this.is_await = false;
-		use("Runtime.BaseStruct").prototype._init.call(this,ctx);
+		this.response = null;
+		use("Runtime.Exceptions.RuntimeException").prototype._init.call(this,ctx);
 	},
 	assignObject: function(ctx,o)
 	{
-		if (o instanceof use("Runtime.Core.LambdaChainDeclare"))
+		if (o instanceof use("Runtime.Core.ApiException"))
 		{
-			this.name = o.name;
-			this.is_await = o.is_await;
+			this.response = o.response;
 		}
-		use("Runtime.BaseStruct").prototype.assignObject.call(this,ctx,o);
+		use("Runtime.Exceptions.RuntimeException").prototype.assignObject.call(this,ctx,o);
 	},
 	assignValue: function(ctx,k,v)
 	{
-		if (k == "name")this.name = v;
-		else if (k == "is_await")this.is_await = v;
-		else use("Runtime.BaseStruct").prototype.assignValue.call(this,ctx,k,v);
+		if (k == "response")this.response = v;
+		else use("Runtime.Exceptions.RuntimeException").prototype.assignValue.call(this,ctx,k,v);
 	},
 	takeValue: function(ctx,k,d)
 	{
 		if (d == undefined) d = null;
-		if (k == "name")return this.name;
-		else if (k == "is_await")return this.is_await;
-		return use("Runtime.BaseStruct").prototype.takeValue.call(this,ctx,k,d);
+		if (k == "response")return this.response;
+		return use("Runtime.Exceptions.RuntimeException").prototype.takeValue.call(this,ctx,k,d);
 	},
 	getClassName: function(ctx)
 	{
-		return "Runtime.Core.LambdaChainDeclare";
+		return "Runtime.Core.ApiException";
 	},
 });
-Object.assign(Runtime.Core.LambdaChainDeclare, use("Runtime.BaseStruct"));
-Object.assign(Runtime.Core.LambdaChainDeclare,
+Object.assign(Runtime.Core.ApiException, use("Runtime.Exceptions.RuntimeException"));
+Object.assign(Runtime.Core.ApiException,
 {
 	/* ======================= Class Init Functions ======================= */
 	getCurrentNamespace: function()
@@ -76,11 +71,11 @@ Object.assign(Runtime.Core.LambdaChainDeclare,
 	},
 	getCurrentClassName: function()
 	{
-		return "Runtime.Core.LambdaChainDeclare";
+		return "Runtime.Core.ApiException";
 	},
 	getParentClassName: function()
 	{
-		return "Runtime.BaseStruct";
+		return "Runtime.Exceptions.RuntimeException";
 	},
 	getClassInfo: function(ctx)
 	{
@@ -89,8 +84,8 @@ Object.assign(Runtime.Core.LambdaChainDeclare,
 		var IntrospectionInfo = use("Runtime.IntrospectionInfo");
 		return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_CLASS,
-			"class_name": "Runtime.Core.LambdaChainDeclare",
-			"name": "Runtime.Core.LambdaChainDeclare",
+			"class_name": "Runtime.Core.ApiException",
+			"name": "Runtime.Core.ApiException",
 			"annotations": Collection.from([
 			]),
 		});
@@ -99,10 +94,9 @@ Object.assign(Runtime.Core.LambdaChainDeclare,
 	{
 		var a = [];
 		if (f==undefined) f=0;
-		if ((f|3)==3)
+		if ((f|2)==2)
 		{
-			a.push("name");
-			a.push("is_await");
+			a.push("response");
 		}
 		return use("Runtime.Collection").from(a);
 	},
@@ -111,16 +105,9 @@ Object.assign(Runtime.Core.LambdaChainDeclare,
 		var Collection = use("Runtime.Collection");
 		var Dict = use("Runtime.Dict");
 		var IntrospectionInfo = use("Runtime.IntrospectionInfo");
-		if (field_name == "name") return new IntrospectionInfo(ctx, {
+		if (field_name == "response") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.Core.LambdaChainDeclare",
-			"name": field_name,
-			"annotations": Collection.from([
-			]),
-		});
-		if (field_name == "is_await") return new IntrospectionInfo(ctx, {
-			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.Core.LambdaChainDeclare",
+			"class_name": "Runtime.Core.ApiException",
 			"name": field_name,
 			"annotations": Collection.from([
 			]),
@@ -137,5 +124,5 @@ Object.assign(Runtime.Core.LambdaChainDeclare,
 	{
 		return null;
 	},
-});use.add(Runtime.Core.LambdaChainDeclare);
-module.exports = Runtime.Core.LambdaChainDeclare;
+});use.add(Runtime.Core.ApiException);
+module.exports = Runtime.Core.ApiException;

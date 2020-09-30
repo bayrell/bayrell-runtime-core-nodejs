@@ -30,7 +30,7 @@ Object.assign(Runtime.Core.Entity.prototype,
 	/* Functions */
 	className: function(ctx)
 	{
-		return (this.value != "") ? (this.value) : (this.name);
+		return (this.name != "") ? ((this.value != "") ? (this.value) : (this.name)) : ("");
 	},
 	logName: function(ctx)
 	{

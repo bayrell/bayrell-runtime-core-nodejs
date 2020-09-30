@@ -65,7 +65,9 @@ Object.assign(Runtime.Core.Context.prototype,
 		var __v1 = new __v0(ctx, this);
 		__v1 = __v1.attr(ctx, "settings");
 		var __v2 = use("Runtime.lib");
-		__v1 = __v1.call(ctx, __v2.get(ctx, key, ""));
+		__v1 = __v1.call(ctx, __v2.get(ctx, "secrets", null));
+		var __v3 = use("Runtime.lib");
+		__v1 = __v1.call(ctx, __v3.get(ctx, key, ""));
 		return __v1.value(ctx);
 	},
 	/* ------------------ Object Manager ---------------- */
@@ -142,7 +144,7 @@ Object.assign(Runtime.Core.Context.prototype,
 	/**
 	 * Remote call
 	 * @param Dict items
-	 * @return RemoteCallResponse
+	 * @return RemoteCallAnswer
 	 */
 	remoteLocalCall: async function(ctx, items)
 	{
@@ -161,7 +163,7 @@ Object.assign(Runtime.Core.Context.prototype,
 	/**
 	 * Remote call
 	 * @param Dict items
-	 * @return RemoteCallResponse
+	 * @return RemoteCallAnswer
 	 */
 	remoteBusCall: async function(ctx, items)
 	{
@@ -291,7 +293,7 @@ Object.assign(Runtime.Core.Context.prototype,
 	/**
 	 * Remote call
 	 * @param Dict items
-	 * @return RemoteCallResponse
+	 * @return RemoteCallAnswer
 	 */
 	remoteSystemCall: async function(ctx, items)
 	{
@@ -434,8 +436,12 @@ Object.assign(Runtime.Core.Context,
 		{
 			main_module_class_name = main_module + use("Runtime.rtl").toStr(".ModuleDescription");
 			var __v0 = use("Runtime.rtl");
-			var f = __v0.method(ctx, main_module_class_name, "appSettings");
-			settings = f(ctx, c.enviroments);
+			if (__v0.method_exists(ctx, main_module_class_name, "appSettings"))
+			{
+				var __v1 = use("Runtime.rtl");
+				var f = __v1.method(ctx, main_module_class_name, "appSettings");
+				settings = f(ctx, c.enviroments);
+			}
 		}
 		/* Add main module */
 		if (main_module)
@@ -642,9 +648,13 @@ Object.assign(Runtime.Core.Context,
 		{
 			var module_class_name = modules.item(ctx, i) + use("Runtime.rtl").toStr(".ModuleDescription");
 			var __v1 = use("Runtime.rtl");
-			var f = __v1.method(ctx, module_class_name, "entities");
-			var arr = f(ctx);
-			entities.appendVector(ctx, arr);
+			if (__v1.method_exists(ctx, module_class_name, "entities"))
+			{
+				var __v2 = use("Runtime.rtl");
+				var f = __v2.method(ctx, module_class_name, "entities");
+				var arr = f(ctx);
+				entities.appendVector(ctx, arr);
+			}
 		}
 		return entities.toCollection(ctx);
 	},
@@ -847,9 +857,5 @@ Object.assign(Runtime.Core.Context,
 	{
 		return null;
 	},
-	__implements__:
-	[
-		use("Runtime.Interfaces.ContextInterface"),
-	],
 });use.add(Runtime.Core.Context);
 module.exports = Runtime.Core.Context;

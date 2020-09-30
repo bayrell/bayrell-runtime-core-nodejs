@@ -35,7 +35,7 @@ Object.assign(Runtime.Core.BusDriverInterface.prototype,
 	 * Send message
 	 * @return string
 	 */
-	remoteBusCall: async function(ctx, items)
+	remoteBusCall: async function(ctx, request)
 	{
 	},
 	getClassName: function(ctx)

@@ -58,7 +58,7 @@ Object.assign(Runtime.Core.ModuleDescription,
 	 */
 	getModuleVersion: function(ctx)
 	{
-		return "0.10.3";
+		return "0.10.4";
 	},
 	/**
 	 * Returns required modules
@@ -69,26 +69,11 @@ Object.assign(Runtime.Core.ModuleDescription,
 		return use("Runtime.Dict").from({"Runtime":">=0.3"});
 	},
 	/**
-	 * Returns module files load order
-	 * @return Collection<string>
-	 */
-	assets: function(ctx)
-	{
-		return use("Runtime.Collection").from(["Runtime.Core/Context","Runtime.Core/CoreDriver","Runtime.Core/CoreEvent","Runtime.Core/CoreProvider","Runtime.Core/Entity","Runtime.Core/Driver","Runtime.Core/LambdaChain","Runtime.Core/LambdaChainDeclare","Runtime.Core/Message","Runtime.Core/MessageRPC","Runtime.Core/MessageSession","Runtime.Core/ModuleDescription","Runtime.Core/Provider"]);
-	},
-	/**
 	 * Returns enities
 	 */
 	entities: function(ctx)
 	{
 		return use("Runtime.Collection").from([]);
-	},
-	/**
-	 * Returns sync loaded files
-	 */
-	resources: function(ctx)
-	{
-		return null;
 	},
 	/* ======================= Class Init Functions ======================= */
 	getCurrentNamespace: function()
@@ -139,10 +124,5 @@ Object.assign(Runtime.Core.ModuleDescription,
 	{
 		return null;
 	},
-	__implements__:
-	[
-		use("Runtime.Interfaces.ModuleDescriptionInterface"),
-		use("Runtime.Interfaces.AssetsInterface"),
-	],
 });use.add(Runtime.Core.ModuleDescription);
 module.exports = Runtime.Core.ModuleDescription;

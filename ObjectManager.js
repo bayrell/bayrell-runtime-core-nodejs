@@ -21,7 +21,7 @@ if (typeof Runtime == 'undefined') Runtime = {};
 if (typeof Runtime.Core == 'undefined') Runtime.Core = {};
 Runtime.Core.ObjectManager = function(ctx)
 {
-	use("Runtime.Core.CoreObject").call(this, ctx);
+	use("Runtime.Core.CoreDriver").call(this, ctx);
 	/* Create object */
 	var __v0 = use("Runtime.Map");
 	this.objects = new __v0(ctx);
@@ -44,7 +44,7 @@ Runtime.Core.ObjectManager = function(ctx)
 	this.listeners = new __v6(ctx);
 	this.manager = this;
 };
-Runtime.Core.ObjectManager.prototype = Object.create(use("Runtime.Core.CoreObject").prototype);
+Runtime.Core.ObjectManager.prototype = Object.create(use("Runtime.Core.CoreDriver").prototype);
 Runtime.Core.ObjectManager.prototype.constructor = Runtime.Core.ObjectManager;
 Object.assign(Runtime.Core.ObjectManager.prototype,
 {
@@ -237,7 +237,7 @@ Object.assign(Runtime.Core.ObjectManager.prototype,
 			if (driver == null)
 			{
 				var __v4 = use("Runtime.Exceptions.RuntimeException");
-				throw new __v4(ctx, "Driver not found " + use("Runtime.rtl").toStr(class_name))
+				throw new __v4(ctx, "Driver '" + use("Runtime.rtl").toStr(class_name) + use("Runtime.rtl").toStr("' not found"))
 			}
 			this.objects.set(ctx, driver_name, driver);
 			this.drivers.set(ctx, driver_name, driver);
@@ -357,7 +357,7 @@ Object.assign(Runtime.Core.ObjectManager.prototype,
 	/**
 	 * Set parent
 	 */
-	setParent: function(ctx, child_obj, parent_obj)
+	changeParent: function(ctx, child_obj, parent_obj)
 	{
 		if (child_obj.parent != null)
 		{
@@ -381,7 +381,7 @@ Object.assign(Runtime.Core.ObjectManager.prototype,
 		this.mutex_objects = null;
 		this.mutex_process = null;
 		this.listeners = null;
-		use("Runtime.Core.CoreObject").prototype._init.call(this,ctx);
+		use("Runtime.Core.CoreDriver").prototype._init.call(this,ctx);
 	},
 	assignObject: function(ctx,o)
 	{
@@ -395,7 +395,7 @@ Object.assign(Runtime.Core.ObjectManager.prototype,
 			this.mutex_process = o.mutex_process;
 			this.listeners = o.listeners;
 		}
-		use("Runtime.Core.CoreObject").prototype.assignObject.call(this,ctx,o);
+		use("Runtime.Core.CoreDriver").prototype.assignObject.call(this,ctx,o);
 	},
 	assignValue: function(ctx,k,v)
 	{
@@ -406,7 +406,7 @@ Object.assign(Runtime.Core.ObjectManager.prototype,
 		else if (k == "mutex_objects")this.mutex_objects = v;
 		else if (k == "mutex_process")this.mutex_process = v;
 		else if (k == "listeners")this.listeners = v;
-		else use("Runtime.Core.CoreObject").prototype.assignValue.call(this,ctx,k,v);
+		else use("Runtime.Core.CoreDriver").prototype.assignValue.call(this,ctx,k,v);
 	},
 	takeValue: function(ctx,k,d)
 	{
@@ -418,14 +418,14 @@ Object.assign(Runtime.Core.ObjectManager.prototype,
 		else if (k == "mutex_objects")return this.mutex_objects;
 		else if (k == "mutex_process")return this.mutex_process;
 		else if (k == "listeners")return this.listeners;
-		return use("Runtime.Core.CoreObject").prototype.takeValue.call(this,ctx,k,d);
+		return use("Runtime.Core.CoreDriver").prototype.takeValue.call(this,ctx,k,d);
 	},
 	getClassName: function(ctx)
 	{
 		return "Runtime.Core.ObjectManager";
 	},
 });
-Object.assign(Runtime.Core.ObjectManager, use("Runtime.Core.CoreObject"));
+Object.assign(Runtime.Core.ObjectManager, use("Runtime.Core.CoreDriver"));
 Object.assign(Runtime.Core.ObjectManager,
 {
 	/* ======================= Class Init Functions ======================= */
@@ -439,7 +439,7 @@ Object.assign(Runtime.Core.ObjectManager,
 	},
 	getParentClassName: function()
 	{
-		return "Runtime.Core.CoreObject";
+		return "Runtime.Core.CoreDriver";
 	},
 	getClassInfo: function(ctx)
 	{
